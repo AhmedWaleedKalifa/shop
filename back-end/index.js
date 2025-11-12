@@ -1,34 +1,24 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma=new PrismaClient()
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
-    async function main() {
-        await prisma.user.create({
-          data: {
-            name: 'Alice',
-            email: 'alice@prisma.io',
-            posts: {
-              create: { title: 'Hello World' },
-            },
-            profile: {
-              create: { bio: 'I like turtles' },
-            },
-          },
-        })
-      
-        const allUsers = await prisma.user.findMany({
-          include: {
-            posts: true,
-            profile: true,
-          },
-        })
-        console.dir(allUsers, { depth: null })
-      }
+async function main() {
+  const user = await prisma.user.create({
+    data:{
+      email:"ahmed2210waleed@gmail.com",
+      name:"Ahmed",
+      role:"ADMIN",
+      password:"WsAaZyM3023593"
+    }
+  })
+  console.log(user)
+}
+
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

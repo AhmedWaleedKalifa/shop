@@ -4,37 +4,100 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
-
-model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
-}
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
+}
+
+model User {
+  id       String    @id @default(uuid())
+  email    String    @unique
+  password String
+  name     String?
+  role     UserRole  @default(BASIC)
+  products Product[]
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  name        String
+  description String
+  material    String?
+  price       Float
+  quantity    Int
+  factory     String?
+  status      ProductStatus @default(INACTIVE)
+  discount    Int?
+  sku         String?
+  createdBy   User          @relation(fields: [userId], references: [id])
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  productColors ProductColor[]
+  productSizes  ProductSize[]
+  productImages ProductImage[]
+
+  @@index([status])
+  @@index([price])
+  @@index([name])
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model Category {
+  id           String    @id @default(uuid())
+  name         String
+  description  String
+  buttonText   String
+  displayOrder Int       @unique
+  imageUrl     String
+  products     Product[]
+}
+
+model ProductColor {
+  id        String   @id @default(uuid())
+  product   Product? @relation(fields: [productId], references: [id])
+  productId String?
+  colorName String
+  hexCode   String
+}
+
+model ProductSize {
+  id         String   @id @default(uuid())
+  product    Product? @relation(fields: [productId], references: [id])
+  productId  String?
+  size       Int
+  sizeSymbol String
+}
+
+model ProductImage {
+  id           String   @id @default(uuid())
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?
+  imageUrl     String
+  altText      String
+  isPrimary    Boolean
+  displayOrder Int      @unique
+}
+
+enum UserRole {
+  BASIC
+  ADMIN
+  EDITOR
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+  DRAFT
 }
