@@ -26,9 +26,8 @@ model User {
 }
 
 model Product {
-  id       String     @id @default(uuid())
-  category Category[]
-
+  id          String        @id @default(uuid())
+  category    Category[]
   name        String
   description String
   material    String?
