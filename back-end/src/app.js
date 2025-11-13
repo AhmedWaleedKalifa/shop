@@ -1,10 +1,11 @@
 const express=require("express")
 require('dotenv').config();
 // const cors = require('cors');
-// import userRoutes from './modules/user/user.routes';
-// import productRoutes from './modules/product/product.routes';
-// import categoryRoutes from './modules/category/category.routes';
+// const  userRoutes =require("./routes/userRoutes") ;
+// const  productRoutes =require("./routes/productRoutes.js");
+// const categoryRoutes =require("./routes/categoryRoutes.js");
 // import { errorHandler } from './middlewares/errorHandler';
+const authRouter=require("./routes/authRoutes")
 const app =express();
 // app.use(cors());
 
@@ -14,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/",(req,res)=>{
     res.send("Hello!")
 })
+app.use("/api/auth",authRouter)
 // app.use('/api/users', userRoutes);
 // app.use('/api/products', productRoutes);
 // app.use('/api/categories', categoryRoutes);

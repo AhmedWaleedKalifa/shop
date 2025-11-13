@@ -15,20 +15,19 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(uuid())
+  id        String    @id @default(cuid())
   email     String    @unique
   password  String
   name      String?
-  role      UserRole  @default(BASIC)
+  role      UserRole  @default(USER)
   products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id         String   @id @default(uuid())
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
+  id       String     @id @default(uuid())
+  category Category[]
 
   name        String
   description String
@@ -101,9 +100,9 @@ model ProductImage {
 }
 
 enum UserRole {
-  BASIC
+  USER
   ADMIN
-  EDITOR
+  MODERATOR
 }
 
 enum ProductStatus {

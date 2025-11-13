@@ -1,10 +1,11 @@
-import express from 'express';
-import { createProduct, matchProducts, getProductMatches } from '../controllers/productController.js';
+const express = require("express");
+const productController = require("../controllers/productController");
+const productRouter = express.Router();
 
-const router = express.Router();
 
-router.post('/', createProduct);
-router.post('/match', matchProducts);
-router.get('/:id/matches', getProductMatches);
+productRouter.post("/", productController.createProduct);
+productRouter.put("/", productController.updateProduct);
+productRouter.get("/", productController.getFilteredProducts);
+productRouter.delete("/", productController.deleteProduct);
 
-export default router;
+module.exports = productRouter;
