@@ -1,12 +1,14 @@
 const { verifyToken } = require('../utils/auth');
 
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    const token = req.header('Authorization')?.replace('Bearer ', '') || 
+                  req.cookies.token;
     
     if (!token) {
       return res.status(401).json({ error: 'Access denied. No token provided.' });
     }
+
     const decoded = verifyToken(token);
     req.user = decoded;
     next();
@@ -14,7 +16,6 @@ const authenticate = (req, res, next) => {
     res.status(401).json({ error: 'Invalid token' });
   }
 };
-
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

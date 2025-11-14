@@ -15,14 +15,15 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  password  String
-  name      String?
-  role      UserRole  @default(USER)
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         String     @id @default(cuid())
+  email      String     @unique
+  password   String
+  name       String?
+  role       UserRole   @default(USER)
+  products   Product[]
+  categories Category[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Product {
@@ -61,6 +62,8 @@ model Category {
   displayOrder Int       @unique
   imageUrl     String
   products     Product[]
+  createdBy    User      @relation(fields: [userId], references: [id])
+  userId       String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
