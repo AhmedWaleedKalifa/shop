@@ -58,7 +58,6 @@ const register = async (req, res) => {
       token:token
     });
   } catch (error) {
-    console.error('Registration error:', error);
     
     if (error.code === 'P2002') {
       return res.status(409).json({ error: 'User with this email already exists' });
@@ -110,7 +109,6 @@ const login = async (req, res) => {
       token:token
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error during login' });
   }
 };
@@ -127,7 +125,6 @@ const logout = async (req, res) => {
       message: 'Logout successful' 
     });
   } catch (error) {
-    console.error('Logout error:', error);
     res.status(500).json({ error: 'Internal server error during logout' });
   }
 };

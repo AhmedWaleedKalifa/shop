@@ -15,47 +15,52 @@ generator client {
 }
 
 model User {
-  id         String     @id @default(cuid())
-  email      String     @unique
-  password   String
-  name       String?
+  id       String  @id @default(cuid())
+  email    String  @unique
+  password String
+  name     String?
+
   role       UserRole   @default(USER)
   products   Product[]
   categories Category[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id           String    @id @default(uuid())
+  id           String @id @default(uuid())
   name         String
   description  String
-  buttonText   String
-  displayOrder Int
-  imageUrl     String
-  products     Product[]
-  createdBy    User      @relation(fields: [userId], references: [id])
-  userId       String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  buttonText   String @default("Check")
+  displayOrder Int    @default(10)
+  imageUrl     String @default("https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg")
+
+  createdBy User      @relation(fields: [userId], references: [id])
+  userId    String
+  products  Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([displayOrder, name])
 }
 
 model Product {
-  id            String         @id @default(uuid())
-  category      Category[]
-  name          String
-  description   String
-  material      String?
-  price         Float
-  quantity      Int?
-  factory       String?
-  status        ProductStatus  @default(INACTIVE)
-  discount      Float          @default(0)
-  sku           String?
+  id          String  @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  discount    Float   @default(0)
+  material    String?
+  quantity    Int?
+  factory     String?
+  sku         String?
+
   createdBy     User           @relation(fields: [userId], references: [id])
   userId        String
+  categories    Category[]
+  status        ProductStatus  @default(INACTIVE)
   productColors ProductColor[]
   productSizes  ProductSize[]
   productImages ProductImage[]
@@ -63,31 +68,32 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([updatedAt])
+  @@index([createdAt])
   @@index([status])
   @@index([price])
   @@index([name])
-  @@index([createdAt])
-  @@index([updatedAt])
 }
 
 model ProductColor {
   id           String   @id @default(uuid())
-  product      Product? @relation(fields: [productId], references: [id])
+  product      Product? @relation(fields: [productId], references: [id], onDelete: Cascade) // ✅ KEEP onDelete here
   productId    String?
   colorName    String
   hexCode      String
-  displayOrder Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  displayOrder Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProductSize {
   id           String   @id @default(uuid())
-  product      Product? @relation(fields: [productId], references: [id])
+  product      Product? @relation(fields: [productId], references: [id], onDelete: Cascade) // ✅ KEEP onDelete here
   productId    String?
   size         Int
   sizeSymbol   String
-  displayOrder Int
+  displayOrder Int      @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -95,12 +101,12 @@ model ProductSize {
 
 model ProductImage {
   id           String   @id @default(uuid())
-  product      Product? @relation(fields: [productId], references: [id])
+  product      Product? @relation(fields: [productId], references: [id], onDelete: Cascade) // ✅ KEEP onDelete here
   productId    String?
   imageUrl     String
   altText      String
-  isPrimary    Boolean
-  displayOrder Int
+  isPrimary    Boolean?
+  displayOrder Int      @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

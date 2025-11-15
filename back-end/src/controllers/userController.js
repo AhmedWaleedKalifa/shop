@@ -79,6 +79,9 @@ async function updateUser(req, res) {
 async function deleteUser(req, res) {
   try {
     const { id } = req.params;
+    if(id===process.env.SUPER_ADMIN_ID){
+      res.status(403).json({message:"YOU CAN NOT DELETE SUPER ADMIN !!!"})
+    }
     const user = await prisma.user.delete({
       where: { id },
     });
