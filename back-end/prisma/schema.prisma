@@ -26,26 +26,42 @@ model User {
   updatedAt  DateTime   @updatedAt
 }
 
-model Product {
-  id          String        @id @default(uuid())
-  category    Category[]
-  name        String
-  description String
-  material    String?
-  price       Float
-  quantity    Int
-  factory     String?
-  status      ProductStatus @default(INACTIVE)
-  discount    Float?
-  sku         String?
-  createdBy   User          @relation(fields: [userId], references: [id])
-  userId      String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+model Category {
+  id           String    @id @default(uuid())
+  name         String
+  description  String
+  buttonText   String
+  displayOrder Int
+  imageUrl     String
+  products     Product[]
+  createdBy    User      @relation(fields: [userId], references: [id])
+  userId       String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
+  @@index([displayOrder, name])
+}
+
+model Product {
+  id            String         @id @default(uuid())
+  category      Category[]
+  name          String
+  description   String
+  material      String?
+  price         Float
+  quantity      Int?
+  factory       String?
+  status        ProductStatus  @default(INACTIVE)
+  discount      Float          @default(0)
+  sku           String?
+  createdBy     User           @relation(fields: [userId], references: [id])
+  userId        String
   productColors ProductColor[]
   productSizes  ProductSize[]
   productImages ProductImage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([price])
@@ -54,51 +70,40 @@ model Product {
   @@index([updatedAt])
 }
 
-model Category {
-  id           String    @id @default(uuid())
-  name         String
-  description  String
-  buttonText   String
-  displayOrder Int       @unique
-  imageUrl     String
-  products     Product[]
-  createdBy    User      @relation(fields: [userId], references: [id])
-  userId       String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-}
-
 model ProductColor {
-  id        String   @id @default(uuid())
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
-  colorName String
-  hexCode   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?
+  colorName    String
+  hexCode      String
+  displayOrder Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model ProductSize {
-  id         String   @id @default(uuid())
-  product    Product? @relation(fields: [productId], references: [id])
-  productId  String?
-  size       Int
-  sizeSymbol String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String   @id @default(uuid())
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?
+  size         Int
+  sizeSymbol   String
+  displayOrder Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProductImage {
-  id        String   @id @default(uuid())
-  product   Product? @relation(fields: [productId], references: [id])
-  productId String?
-  imageUrl  String
-  altText   String
-  isPrimary Boolean
+  id           String   @id @default(uuid())
+  product      Product? @relation(fields: [productId], references: [id])
+  productId    String?
+  imageUrl     String
+  altText      String
+  isPrimary    Boolean
+  displayOrder Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  displayOrder Int @unique
 }
 
 enum UserRole {

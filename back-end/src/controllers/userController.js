@@ -1,5 +1,4 @@
-const prisma = require("../config/db");
-const db = require("../config/db");
+const prisma = require("../config/prisma");
 
 async function updateUser(req, res) {
   try {
@@ -98,7 +97,7 @@ async function getUsers(req, res) {
     if (!users || users.length == 0) {
       return res.status(404).json({ error: "No Users found" });
     }
-    return res.status(200).json(users);
+    return res.status(200).json({message:"Get Users Successfully",users:users});
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
