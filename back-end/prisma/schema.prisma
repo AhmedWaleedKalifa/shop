@@ -36,12 +36,14 @@ model Category {
   displayOrder Int    @default(10)
   imageUrl     String @default("https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg")
 
-  createdBy User      @relation(fields: [userId], references: [id])
-  userId    String
-  products  Product[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdBy              User      @relation(fields: [userId], references: [id])
+  userId                 String
+  products               Product[]
+  horizontalTextPosition Position  @default(CENTER)
+  verticalTextPosition   Position  @default(CENTER)
+  status                 Status    @default(INACTIVE)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   @@index([displayOrder, name])
 }
@@ -60,7 +62,7 @@ model Product {
   createdBy     User           @relation(fields: [userId], references: [id])
   userId        String
   categories    Category[]
-  status        ProductStatus  @default(INACTIVE)
+  status        Status         @default(INACTIVE)
   productColors ProductColor[]
   productSizes  ProductSize[]
   productImages ProductImage[]
@@ -118,9 +120,15 @@ enum UserRole {
   MODERATOR
 }
 
-enum ProductStatus {
+enum Status {
   ACTIVE
   INACTIVE
   OUT_OF_STOCK
   DRAFT
+}
+
+enum Position {
+  CENTER
+  START
+  END
 }
