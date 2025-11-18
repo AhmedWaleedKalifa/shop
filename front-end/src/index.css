@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@theme {
+  --color-black: #010101;
+  --color-yellow:#FAC61B;
+  --color-white: #ffffff
+}
+
+* {
+  @apply scroll-smooth;
+}
+
+/* Prevent scrollbar layout shift */
+html {
+    overflow-y: scroll;
+}
+
+.activeLink {
+    @apply w-fit inline-block capitalize border-b-2 border-[#fac712] py-1 text-[#fac712]
+}
+
+.link {
+    @apply w-fit inline-block capitalize border-b-2 border-transparent py-1 text-black
+}

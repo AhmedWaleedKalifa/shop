@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { categoryService } from "../src/services/categoryService"
-
-// import { getApiError } from "../utils/getApiError";
-import CategoryCard from "./components/CategoryCard"
-
-import Navbar from "./components/Navbar";
-export default function App() {
-  const [categories, setCategories] = useState([]);
+import React from 'react'
+import { useEffect } from 'react';
+import { useState } from 'react';
+import {categoryService} from "../services/categoryService"
+import Navbar from '../components/Navbar';
+import CategoryCard from '../components/CategoryCard';
+function Home() {
+     const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   // const [errorMsg, setErrorMsg] = useState("");
 
@@ -14,7 +13,6 @@ export default function App() {
     async function loadCategories() {
       try {
         const data = await categoryService.getAll();
-        console.log("API response:", data);
         setCategories(Array.isArray(data) ? data : data.categories || []);
       } catch (error) {
         // setErrorMsg(getApiError(error));
@@ -39,13 +37,13 @@ export default function App() {
   // }
 
   return (
-    <div className=" mx-auto ">
-      <Navbar/>
+    <div className=" mx-auto bg-gray-400">
+        <h1>Home</h1>
       <h2 className="text-2xl font-bold mb-4">All Categories</h2>
 
       <div className="space-y-4">
         {categories.map((cat) => (
-          <CategoryCard  buttonText={cat.buttonText}name={cat.name} leftImage={cat.leftImage}rightImage={cat.rightImage} key={cat.id} />
+          <CategoryCard id={cat.id} buttonText={cat.buttonText}name={cat.name} leftImage={cat.leftImage}rightImage={cat.rightImage} key={cat.id} />
         ))}
         <CategoryCard name="Hello" leftImage={"./leftImage.png"}rightImage={"./rightImage.png"} buttonText="discover"/>
         {categories.length === 0 && (
@@ -56,4 +54,7 @@ export default function App() {
       </div>
     </div>
   );
+  
 }
+
+export default Home
