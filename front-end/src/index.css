@@ -5,15 +5,15 @@
   --color-gray:#6B7280;
   --color-yellow:#FAC61B;
   --color-white: #ffffff;
-    --color-red: #ee2222
-
+    --color-red: #ee2222;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 * {
-  @apply scroll-smooth;
+  @apply scroll-smooth font-body;
 }
 
-/* Prevent scrollbar layout shift */
 html {
     overflow-y: scroll;
 }

@@ -40,9 +40,7 @@ const register = async (req, res) => {
       user.email,
       "Welcome to Our App!",
       `Hello ${user.name || ""}, Welcome to Werzu shopping platform!`,
-      `<h2>Hello ${user.name || ""}</h2><p>Welcome to Werzu shopping platform! We're happy to have you 😊</p>
-      <img alt="logo" src="../../logo.png">
-      `
+      `<h2>Hello ${user.name || ""}</h2><p>Welcome to Werzu shopping platform! We're happy to have you 😊</p>`
     );
     const token = generateToken({
       id: user.id,

@@ -15,9 +15,7 @@ function Navbar() {
           try {
             const data = await categoryService.getAll();
             setCategories(Array.isArray(data) ? data : data.categories || []);
-          } catch (error) {
-            // setErrorMsg(getApiError(error));
-          } finally {
+          }  finally {
             setLoading(false);
           }
         }

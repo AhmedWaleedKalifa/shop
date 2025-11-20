@@ -40,6 +40,7 @@ function Category() {
         setLoading(false);
       }
     }
+    window.scrollTo(0, 0);
 
     if (id) {
       loadData();
@@ -47,15 +48,16 @@ function Category() {
       setLoading(false);
       setErrorMsg("No category ID provided");
     }
+
   }, [id]);
 
   if (loading) {
-    return <div className="text-center py-10 text-gray-600">Loading...</div>;
+    return <div className="text-center py-10 text-gray min-h-[70vh]">Loading...</div>;
   }
 
   if (errorMsg) {
     return (
-      <div className="text-center py-10 text-red-500 font-semibold">
+      <div className="text-center py-10 text-red font-semibold min-h-[70vh]">
         {errorMsg}
       </div>
     );
@@ -63,14 +65,14 @@ function Category() {
 
   if (!category) {
     return (
-      <div className="text-center py-10 text-gray-600">
+      <div className="text-center py-10 text-gray min-h-[70vh]">
         Category not found.
       </div>
     );
   }
 
   return (
-    <div className=" bg-white m-2">
+    <div className=" bg-white m-2 min-h-[70vh]">
       <h2 className='font-bold text-black'>{category.name}</h2>
       <div className="flex flex-row flex-wrap gap-2 lg:gap-1.5 mt-2 w-full h-auto ">
         {products.map((product) => (

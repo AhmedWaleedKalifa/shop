@@ -1,7 +1,6 @@
 import Error from "./pages/Error";
 import Home from "./pages/Home";
 import Category from "./pages/Category"
-import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Product from "./pages/Product";
@@ -13,7 +12,6 @@ const routes = [
         element: <PageTemplate />,
     children:[
         { path: "", element: <Home /> },
-        { path: "contact", element: <Contact /> },
         // { path: "login", element: <Login /> },
         // { path: "register", element: <Register /> },
         { path: "category/:id?", element: <Category /> },

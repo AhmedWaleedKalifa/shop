@@ -30,24 +30,25 @@ function Home() {
         setLoading(false);
       }
     }
+    window.scrollTo(0, 0);
 
     loadCategories();
   }, []);
 
   if (loading) {
-    return <div className="text-center py-10 text-gray-600">Loading...</div>;
+    return <div className="text-center py-10 text-gray min-h-screen">Loading...</div>;
   }
 
   if (errorMsg) {
     return (
-      <div className="text-center py-10 text-red-500 font-semibold">
+      <div className="text-center py-10 text-red font-semibold min-h-screen">
         {errorMsg}
       </div>
     );
   }
 
   return (
-    <div className="mx-auto bg-gray-400">
+    <div className="mx-auto bg-gray min-h-screen">
       <div className="">
          <CategoryCard 
             id="1"

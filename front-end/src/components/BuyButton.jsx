@@ -40,7 +40,7 @@ Product ID: ${productId}`;
     return (
         <div className='fixed md:relative left-0 bottom-3 px-2 w-full h-16 flex flex-col items-center justify-center'>
             <div
-                className='w-84 h-12 flex flex-col items-center justify-center font-bold text-xl bg-yellow rounded-full hover:bg-black hover:text-yellow hover:border-3 hover:border-yellow cursor-pointer transition-all duration-300'
+                className=' w-84 h-12 flex tracking-wider flex-col items-center justify-center font-bold text-2xl bg-yellow rounded-full hover:bg-black hover:text-yellow hover:border-3 hover:border-yellow cursor-pointer transition-all duration-300'
                 onClick={handleWhatsAppClick}
             >
                 Buy Now
