@@ -5,8 +5,10 @@ function PageTemplate() {
   return (
     <>
     <Navbar/>
-            <Outlet/>
+    <div className='lg:px-8'>
+                  <Outlet/>
 
+    </div>
     </>
   );  
 }

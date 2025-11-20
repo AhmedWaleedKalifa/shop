@@ -2,8 +2,11 @@
 
 @theme {
   --color-black: #010101;
+  --color-gray:#6B7280;
   --color-yellow:#FAC61B;
-  --color-white: #ffffff
+  --color-white: #ffffff;
+    --color-red: #ee2222
+
 }
 
 * {
@@ -16,9 +19,35 @@ html {
 }
 
 .activeLink {
-    @apply w-fit inline-block capitalize border-b-2 border-[#fac712] py-1 text-[#fac712]
+    @apply w-fit inline-block font-semibold capitalize border-b-2 border-[#fac712] py-1 text-[#fac712] 
 }
 
 .link {
-    @apply w-fit inline-block capitalize border-b-2 border-transparent py-1 text-black
+    @apply w-fit inline-block font-semibold capitalize border-b-2 border-transparent py-1 text-black
+}
+
+.searchInput {
+  @apply text-lg h-12 p-3 px-10 w-10/12 rounded-full  placeholder:font-light placeholder:text-gray placeholder:text-sm placeholder:tracking-wider block bg-white bg-linear-to-r from-yellow/80 via-yellow/40 to-yellow/80  border border-gray/20  focus:outline-none focus:border focus:border-gray     ;
+}
+.searchIcon {
+  @apply h-4 w-4 text-base relative left-8 top-0 z-40 cursor-pointer text-gray ;
+}
+.inActiveSize{
+  @apply w-16 h-16 bg-white flex flex-row items-center justify-center text-2xl font-bold border-2 border-gray text-gray
+}
+.activeSize{
+  @apply w-16 h-16 bg-yellow flex flex-row items-center justify-center text-2xl font-bold border-2 border-black text-black
+}
+  
+.inActiveColor{
+  @apply w-16 h-16 border-2 border-gray mb-18 rounded-full
+}
+.activeColor{
+  @apply w-16 h-16 border-5 border-black mb-18 rounded-full
+}
+.activeColorText{
+  @apply text-black text-lg font-bold text-center 
+}
+.inActiveColorText{
+  @apply text-gray text-lg font-normal  text-center
 }

@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import {Link, useLocation} from "react-router-dom"
 import Searchbar from './Searchbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 function Navbar() {
     const [categories, setCategories] = useState([]);
       const [loading, setLoading] = useState(true);
@@ -33,10 +35,13 @@ function Navbar() {
 
   return (
     <>
-    <Searchbar/>
+   
     <div className='flex flex-col sticky left-0 top-0  z-40 max-w-[100vw] h-auto m-0 p-0'>
+       <Link to="/search">
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute right-4 top-4" />
+    </Link>
       <div className='bg-white flex flex-row justify-center'>
-        <img src="logo.png" alt="logo" className='h-12 bg-cover ' />
+        <img src="logo.jpg" alt="logo" className='h-12 bg-cover ' />
       </div>
       <div className='bg-white '>
       {

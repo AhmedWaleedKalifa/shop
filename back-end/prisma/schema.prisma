@@ -29,13 +29,13 @@ model User {
 }
 
 model Category {
-  id           String @id @default(uuid())
-  name         String
-  description  String
-  buttonText   String @default("Check")
-  displayOrder Int    @default(10)
-  imageUrl     String @default("https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg")
-
+  id                     String    @id @default(uuid())
+  name                   String
+  description            String
+  buttonText             String    @default("Check")
+  displayOrder           Int       @default(10)
+  leftImage              String    @default("https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg")
+  rightImage             String    @default("https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg")
   createdBy              User      @relation(fields: [userId], references: [id])
   userId                 String
   products               Product[]

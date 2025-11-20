@@ -194,16 +194,20 @@ async function getUserProducts(req, res) {
         updatedAt: "asc",
       },
     });
-    if (!products | (products.length == 0)) {
-      res.status(404).json({ message: "No Products Found" });
+    
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No Products Found" });
     }
-    res
-      .status(200)
-      .json({ message: "You Get Products Successfully", products: products });
+    
+    return res.status(200).json({ 
+      message: "You Get Products Successfully", 
+      products: products 
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed To Get Products", error: error.message });
+    return res.status(500).json({ 
+      message: "Failed To Get Products", 
+      error: error.message 
+    });
   }
 }
 async function getAdminProducts(req, res) {
@@ -213,19 +217,51 @@ async function getAdminProducts(req, res) {
         updatedAt: "asc",
       },
     });
-    if (!products | (products.length == 0)) {
-      res.status(404).json({ message: "No Products Found" });
+    
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No Products Found" });
     }
-    res
-      .status(200)
-      .json({ message: "You Get Products Successfully", products: products });
+    
+    return res.status(200).json({ 
+      message: "You Get Products Successfully", 
+      products: products 
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed To Get Products", error: error.message });
+    return res.status(500).json({ 
+      message: "Failed To Get Products", 
+      error: error.message 
+    });
   }
 }
+async function getProductById(req, res) {
+  try {
+    const { id } = req.params;
+    const product = await prisma.product.findFirst({
+      where: {
+        id: id
+      },
+      include: {
+        productColors: true,
+        productImages: true,
+        productSizes: true
+      }
+    });
 
+    if (!product) {
+      return res.status(404).json({ message: "Product Not Found" });
+    }
+
+    res.status(200).json({ 
+      message: "You Get Product Successfully", 
+      product: product 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Failed To Get Product", 
+      error: error.message 
+    });
+  }
+}
 async function updateProduct(req, res) {
   try {
     const { id } = req.params;
@@ -849,14 +885,22 @@ async function createSizeForProduct(req, res) {
     });
   }
 }
-async function getFilteredProducts(req, res) {}
+
+async function searchProduct(req, res) {
+  try{
+    
+  }catch(error){
+
+  }
+}
 
 module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
-  getFilteredProducts,
+  searchProduct,
   getUserProducts,
+  getProductById,
   getAdminProducts,
   deleteImageById,
   deleteColorById,
