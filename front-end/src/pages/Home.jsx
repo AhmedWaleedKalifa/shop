@@ -48,33 +48,39 @@ function Home() {
   }
 
   return (
-    <div className="mx-auto bg-gray min-h-screen">
-      <div className="">
-         <CategoryCard 
-            id="1"
-            buttonText="discover"
-            name="Home"
-            leftImage="./leftImage.png"
-            rightImage="./rightImage.png"  
-          />
+   <main className="mx-auto bg-gray min-h-screen font-body" role="main">
+    <div className="">
+        <section aria-label="Featured category">
+            <CategoryCard 
+                id="1"
+                buttonText="discover"
+                name="Home"
+                leftImage="./leftImage.png"
+                rightImage="./rightImage.png"  
+            />
+        </section>
         
-        {categories.map((cat) => (
-          <CategoryCard 
-            id={cat.id} 
-            buttonText={cat.buttonText}
-            name={cat.name} 
-            leftImage={cat.leftImage}
-            rightImage={cat.rightImage} 
-            key={cat.id} 
-          />
-        ))}
-        {categories.length === 0 && (
-          <div className="text-gray-600 text-center py-6">
-            No categories found.
-          </div>
-        )}
-      </div>
+        <section aria-label="All categories">
+            {categories.map((cat) => (
+                <CategoryCard 
+                    id={cat.id} 
+                    buttonText={cat.buttonText}
+                    name={cat.name} 
+                    leftImage={cat.leftImage}
+                    rightImage={cat.rightImage} 
+                    key={cat.id} 
+                />
+            ))}
+            
+            {categories.length === 0 && (
+                <div className="text-gray-600 text-center py-6 font-body">
+                    <p className="text-lg mb-2">No categories found.</p>
+                    <p className="text-sm">Please check back later for new collections.</p>
+                </div>
+            )}
+        </section>
     </div>
+</main>
   );
 }
 

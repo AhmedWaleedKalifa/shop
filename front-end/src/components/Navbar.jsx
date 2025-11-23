@@ -3,71 +3,84 @@ import { categoryService } from "../services/categoryService"
 import { useEffect } from 'react';
 import { useState } from 'react';
 import {Link, useLocation} from "react-router-dom"
-import Searchbar from './Searchbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+
 function Navbar() {
     const [categories, setCategories] = useState([]);
-      const [loading, setLoading] = useState(true);
-      const location =useLocation()
-      useEffect(() => {
+    const [loading, setLoading] = useState(true);
+    const location = useLocation();
+
+    useEffect(() => {
         async function loadCategories() {
-          try {
-            const data = await categoryService.getAll();
-            setCategories(Array.isArray(data) ? data : data.categories || []);
-          }  finally {
-            setLoading(false);
-          }
+            try {
+                const data = await categoryService.getAll();
+                setCategories(Array.isArray(data) ? data : data.categories || []);
+            }  finally {
+                setLoading(false);
+            }
         }
     
         loadCategories();
-      }, []);
+    }, []);
 
-      // Check if link is active
-      const isActive = (path) => {
+    const isActive = (path) => {
         if (path === '/') {
-          return location.pathname === '/';
+            return location.pathname === '/';
         }
         return location.pathname === path;
-      };
+    };
 
-  return (
-    <>
-   
-    <div className='flex flex-col sticky left-0 top-0  z-40 max-w-[100vw] h-auto m-0 p-0'>
-       <Link to="/search">
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="absolute right-4 top-4" />
-    </Link>
-      <div className='bg-white flex flex-row justify-center'>
-        <img src="logo.jpg" alt="logo" className='h-12 bg-cover ' />
-      </div>
-      <div className='bg-white '>
-      {
-        loading&& <p>Loading...</p>
-      }
-      {categories&& <ul className='flex flex-row text-nowrap w-full gap-3 overflow-x-auto  pl-2 lg:pl-8 p-1'>
-          <Link 
-          to="/"
-          title="home"
-          >
+    return (
+        <nav className=' flex flex-col sticky left-0 top-0 z-50 max-w-[100vw] h-auto m-0 p-0 bg-white/90 backdrop-blur-sm border-b border-gray/20'>
+            <Link to="/search" aria-label="Search products">
+                <FontAwesomeIcon 
+                    icon={faMagnifyingGlass} 
+                    className="absolute right-4 top-4 font-body" 
+                />
+            </Link>
             
-          <li className={`${isActive('/') ? 'activeLink' : 'link'}`} >Home</li>
-          </Link>
-          {categories.map(e=>(
-             <Link 
-          to={`/category/${e.id}`}
-          title="home"
-          key={e.id}
-          >
+            <header className='flex flex-row justify-center'>
+                <img 
+                    src="logo.jpg" 
+                    alt="Werzu Store logo" 
+                    className='h-12 bg-cover font-body' 
+                />
+            </header>
             
-            <li className={`${isActive(`/category/${e.id}`) ? 'activeLink' : 'link'}`} key={e.id}>{e.name}</li>
-          </Link>
-          ))}
-        </ul>}
-      </div>
-    </div>
-    </>
-  )
+            <section className=''>
+                {loading && (
+                    <p className="font-body">Loading...</p>
+                )}
+                
+                {categories && (
+                    <ul 
+                        role="navigation" 
+                        aria-label="Main categories"
+                        className='flex flex-row text-nowrap w-full gap-3 overflow-x-auto pl-2 lg:pl-8 p-1 font-body'
+                    >
+                        <li>
+                            <Link to="/" title="Home">
+                                <span className={`${isActive('/') ? 'activeLink' : 'link'} font-body-medium`}>
+                                    Home
+                                </span>
+                            </Link>
+                        </li>
+                        
+                        {categories.map(category => (
+                            <li key={category.id}>
+                                <Link to={`/category/${category.id}`} title={category.name}>
+                                    <span className={`${isActive(`/category/${category.id}`) ? 'activeLink' : 'link'} font-body`}>
+                                        {category.name}
+                                    </span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </section>
+        </nav>
+    )
 }
 
 export default Navbar

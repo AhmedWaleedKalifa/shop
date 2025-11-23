@@ -885,20 +885,197 @@ async function createSizeForProduct(req, res) {
     });
   }
 }
+// Add these functions to your productController
 
-async function searchProduct(req, res) {
-  try{
-    
-  }catch(error){
+const getPriceRange = async (req, res) => {
+    try {
+        const priceRange = await prisma.product.aggregate({
+            where: {
+                status: { in: ['ACTIVE', 'OUT_OF_STOCK'] }
+            },
+            _min: {
+                price: true
+            },
+            _max: {
+                price: true
+            }
+        })
 
-  }
+        res.status(200).json({
+            success: true,
+            data: {
+                min: priceRange._min.price || 0,
+                max: priceRange._max.price || 1000
+            }
+        })
+    } catch (error) {
+        console.error('Price range error:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get price range',
+            error: error.message
+        })
+    }
 }
 
+const searchProducts = async (req, res) => {
+    try {
+        const {
+            query,
+            category,
+            minPrice,
+            maxPrice,
+            sortBy = 'name',
+            sortOrder = 'asc',
+            page = 1,
+            limit = 12
+        } = req.query
+
+        // Build where clause for Prisma
+        const where = {
+            AND: [
+                // Text search across name and description
+                query ? {
+                    OR: [
+                        { name: { contains: query, mode: 'insensitive' } },
+                        { description: { contains: query, mode: 'insensitive' } }
+                    ]
+                } : {},
+                
+                // Category filter by category ID
+                category ? { 
+                    categories: { 
+                        some: { id: category } 
+                    } 
+                } : {},
+                
+                // Only show active products
+                { status: { in: ['ACTIVE', 'OUT_OF_STOCK'] } }
+            ]
+        }
+
+        // Calculate pagination
+        const skip = (parseInt(page) - 1) * parseInt(limit)
+
+        // First, get all products that match the basic filters
+        const allProducts = await prisma.product.findMany({
+            where,
+            include: {
+                productImages: {
+                    take: 1,
+                    select: { imageUrl: true }
+                },
+                categories: {
+                    select: { id: true, name: true }
+                }
+            }
+        })
+
+        // Calculate discounted prices and filter by price range
+        const productsWithDiscountedPrice = allProducts.map(product => ({
+            ...product,
+            discountedPrice: product.price * (1 - product.discount)
+        }))
+
+        // Apply price range filter on discounted price
+        let filteredProducts = productsWithDiscountedPrice;
+        
+        if (minPrice || maxPrice) {
+            filteredProducts = productsWithDiscountedPrice.filter(product => {
+                const finalPrice = product.discountedPrice;
+                let passMin = true;
+                let passMax = true;
+                
+                if (minPrice) passMin = finalPrice >= parseFloat(minPrice);
+                if (maxPrice) passMax = finalPrice <= parseFloat(maxPrice);
+                
+                return passMin && passMax;
+            });
+        }
+
+        // Apply sorting
+        const sortedProducts = filteredProducts.sort((a, b) => {
+            let aValue, bValue;
+            
+            switch (sortBy) {
+                case 'price':
+                    // Sort by discounted price
+                    aValue = a.discountedPrice;
+                    bValue = b.discountedPrice;
+                    break;
+                case 'createdAt':
+                    aValue = new Date(a.createdAt);
+                    bValue = new Date(b.createdAt);
+                    break;
+                case 'updatedAt':
+                    aValue = new Date(a.updatedAt);
+                    bValue = new Date(b.updatedAt);
+                    break;
+                case 'name':
+                default:
+                    aValue = a.name.toLowerCase();
+                    bValue = b.name.toLowerCase();
+                    break;
+            }
+            
+            if (sortOrder === 'desc') {
+                return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+            } else {
+                return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+            }
+        });
+
+        // Apply pagination
+        const totalCount = sortedProducts.length;
+        const totalPages = Math.ceil(totalCount / limit);
+        const paginatedProducts = sortedProducts.slice(skip, skip + parseInt(limit));
+
+        // Add discountedPrice to the response
+        const finalProducts = paginatedProducts.map(product => ({
+            ...product,
+            discountedPrice: product.discountedPrice // Include in response
+        }));
+
+        res.status(200).json({
+            success: true,
+            message: 'Search completed successfully',
+            data: {
+                products: finalProducts,
+                pagination: {
+                    currentPage: parseInt(page),
+                    totalPages,
+                    totalCount,
+                    hasNext: page < totalPages,
+                    hasPrev: page > 1
+                },
+                filters: {
+                    query,
+                    category,
+                    minPrice,
+                    maxPrice,
+                    sortBy,
+                    sortOrder
+                }
+            }
+        })
+
+    } catch (error) {
+        console.error('Search error:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Failed to search products',
+            error: error.message
+        })
+    }
+}
+
+
 module.exports = {
+   searchProducts, // Add this
+  getPriceRange,
   createProduct,
   updateProduct,
   deleteProduct,
-  searchProduct,
   getUserProducts,
   getProductById,
   getAdminProducts,

@@ -38,14 +38,15 @@ Product ID: ${productId}`;
     };
 
     return (
-        <div className='fixed md:relative left-0 bottom-3 px-2 w-full h-16 flex flex-col items-center justify-center'>
-            <div
-                className=' w-84 h-12 flex tracking-wider flex-col items-center justify-center font-bold text-2xl bg-yellow rounded-full hover:bg-black hover:text-yellow hover:border-3 hover:border-yellow cursor-pointer transition-all duration-300'
-                onClick={handleWhatsAppClick}
-            >
-                Buy Now
-            </div>
-        </div>
+       <button 
+    className='z-40 fixed md:relative left-0 bottom-3 px-2 w-full h-16 flex flex-col items-center justify-center font-heading'
+    onClick={handleWhatsAppClick}
+    aria-label="Buy this product now"
+>
+    <div className='w-84 lg:w-full h-12 flex tracking-wider flex-col items-center justify-center font-bold text-2xl bg-yellow rounded-full hover:bg-black hover:text-yellow hover:border-3 hover:border-yellow cursor-pointer transition-all duration-300 z-40'>
+        Buy Now
+    </div>
+</button>
     );
 };
 export default BuyButton;

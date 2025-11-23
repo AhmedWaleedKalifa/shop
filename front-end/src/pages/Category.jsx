@@ -72,27 +72,39 @@ function Category() {
   }
 
   return (
-    <div className=" bg-white m-2 min-h-[70vh]">
-      <h2 className='font-bold text-black'>{category.name}</h2>
-      <div className="flex flex-row flex-wrap gap-2 lg:gap-1.5 mt-2 w-full h-auto ">
-        {products.map((product) => (
-          <ProductCard 
-            key={product.id} 
-            name={product.name} 
-            id={product.id} 
-            description={product.description} 
-            price={product.price} 
-            discount={product.discount} 
-            image={product.productImages?.[0]?.imageUrl||"https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg" }
-          />
-        ))}
-        {products.length === 0 && (
-          <div className="text-gray-600 text-center py-6">
-            No Products found.
-          </div>
+   <main className="bg-white m-2 min-h-[70vh] font-body">
+    <header className="mb-4">
+        <h1 className='font-bold text-black text-2xl lg:text-3xl font-heading tracking-wide'>
+            {category.name}
+        </h1>
+        {products.length > 0 && (
+            <p className='text-gray text-sm mt-1 font-body'>
+                {products.length} product{products.length !== 1 ? 's' : ''} available
+            </p>
         )}
-      </div>
-    </div>
+    </header>
+    
+    <section className="flex flex-row flex-wrap gap-2 lg:gap-1.5 mt-2 w-full">
+        {products.map((product) => (
+            <ProductCard 
+                key={product.id} 
+                name={product.name} 
+                id={product.id} 
+                description={product.description} 
+                price={product.price} 
+                discount={product.discount} 
+                image={product.productImages?.[0]?.imageUrl||"https://res.cloudinary.com/dgiproy8s/image/upload/v1763208708/0f4b2b6c-d3c7-4b64-9d55-3497177af7e3_prwkpe.jpg"}
+            />
+        ))}
+        
+        {products.length === 0 && (
+            <div className="text-gray-600 text-center py-6 w-full font-body">
+                <p className="text-lg mb-2">No products found in this category.</p>
+                <p className="text-sm text-gray">Check back later for new arrivals.</p>
+            </div>
+        )}
+    </section>
+</main>
   );
 }
 

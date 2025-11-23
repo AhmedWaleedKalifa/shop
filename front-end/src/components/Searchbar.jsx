@@ -6,18 +6,9 @@ function SearchBar() {
 
 
   return (
-    <form  className="w-full h-16 flex flex-row items-center justify-center  relative">
-      <label htmlFor="search">
+  
         <FontAwesomeIcon icon={faMagnifyingGlass} className="searchIcon" />
-      </label>
-      <input
-        type="text"
-        id="search"
-        name="search"
-        placeholder="Search"
-        className="searchInput"
-      />
-    </form>
+    
   );
 }
 

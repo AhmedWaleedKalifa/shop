@@ -1,18 +1,44 @@
 @import "tailwindcss";
+@font-face {
+  font-family: 'Anton';
+  src: url('/fonts/Anton/Anton-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;   /* variable weights */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+}
 
 @theme {
   --color-black: #010101;
-  --color-gray:#6B7280;
-  --color-yellow:#FAC61B;
+  --color-gray: #6B7280;
+  --color-yellow: #FAC61B;
   --color-white: #ffffff;
-    --color-red: #ee2222;
-  --font-heading: 'Playfair Display', serif;
+  --color-red: #ee2222;
+
+  --font-heading: 'Anton', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 
 * {
   @apply scroll-smooth font-body;
 }
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-heading font-light;
+}
+
 
 html {
     overflow-y: scroll;
