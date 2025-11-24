@@ -50,15 +50,6 @@ function Home() {
   return (
    <main className="mx-auto bg-gray min-h-screen font-body" role="main">
     <div className="">
-        <section aria-label="Featured category">
-            <CategoryCard 
-                id="1"
-                buttonText="discover"
-                name="Home"
-                leftImage="./leftImage.png"
-                rightImage="./rightImage.png"  
-            />
-        </section>
         
         <section aria-label="All categories">
             {categories.map((cat) => (

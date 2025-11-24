@@ -22,10 +22,11 @@ function Footer() {
                 <ul className='flex space-x-6 list-none'>
                     <li>
                         <a 
+                            title='Facebook'
                             href={import.meta.env.VITE_FACEBOOK} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="group relative p-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 font-body"
+                            className="group relative w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 font-body"
                             aria-label="Visit our Facebook page"
                         >
                             <FontAwesomeIcon 
@@ -41,10 +42,11 @@ function Footer() {
 
                     <li>
                         <a 
+                            title='Instagram'
                             href={import.meta.env.VITE_INSTAGRAM} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="group relative p-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 font-body"
+                            className="group relative w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 font-body"
                             aria-label="Visit our Instagram page"
                         >
                             <FontAwesomeIcon 
@@ -60,10 +62,11 @@ function Footer() {
 
                     <li>
                         <a 
+                            title='Whatsapp'
                             href={import.meta.env.VITE_WHATSAPP} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="group relative p-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 font-body"
+                            className="group relative w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 font-body"
                             aria-label="Chat with us on WhatsApp"
                         >
                             <FontAwesomeIcon 

@@ -21,8 +21,8 @@
 }
 
 @theme {
-  --color-black: #010101;
   --color-gray: #6B7280;
+  --color-black: #010101;
   --color-yellow: #FAC61B;
   --color-white: #ffffff;
   --color-red: #ee2222;
@@ -32,7 +32,7 @@
 }
 
 * {
-  @apply scroll-smooth font-body;
+  @apply scroll-smooth font-body ;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -52,11 +52,8 @@ html {
     @apply w-fit inline-block font-semibold capitalize border-b-2 border-transparent py-1 text-black
 }
 
-.searchInput {
-  @apply text-lg h-12 p-3 px-10 w-10/12 rounded-full  placeholder:font-light placeholder:text-gray placeholder:text-sm placeholder:tracking-wider block bg-white bg-linear-to-r from-yellow/80 via-yellow/40 to-yellow/80  border border-gray/20  focus:outline-none focus:border focus:border-gray     ;
-}
 .searchIcon {
-  @apply h-4 w-4 text-base relative left-8 top-0 z-40 cursor-pointer text-gray ;
+  @apply h-4 w-4 text-base relative left-8 top-0 z-40 cursor-pointer  ;
 }
 .inActiveSize{
   @apply w-16 h-16 bg-white flex flex-row items-center justify-center text-2xl font-bold border-2 border-gray text-gray

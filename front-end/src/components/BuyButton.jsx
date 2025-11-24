@@ -39,11 +39,11 @@ Product ID: ${productId}`;
 
     return (
        <button 
-    className='z-40 fixed md:relative left-0 bottom-3 px-2 w-full h-16 flex flex-col items-center justify-center font-heading'
+    className='z-40 sticky md:relative left-0 bottom-3 px-2 w-full h-12 flex flex-col items-center justify-center font-heading mb-3'
     onClick={handleWhatsAppClick}
     aria-label="Buy this product now"
 >
-    <div className='w-84 lg:w-full h-12 flex tracking-wider flex-col items-center justify-center font-bold text-2xl bg-yellow rounded-full hover:bg-black hover:text-yellow hover:border-3 hover:border-yellow cursor-pointer transition-all duration-300 z-40'>
+    <div className='w-84 md:w-full h-10 flex tracking-wider flex-col items-center justify-center font-bold text-lg bg-yellow rounded-full hover:bg-black hover:text-yellow cursor-pointer transition-all duration-300 z-40'>
         Buy Now
     </div>
 </button>

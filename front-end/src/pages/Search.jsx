@@ -9,8 +9,8 @@ function Search() {
     category: '',
     minPrice: '',
     maxPrice: '',
-    sortBy: 'name',
-    sortOrder: 'asc'
+    sortBy: 'createdAt', // Default to newest first
+    sortOrder: 'desc'    // Default to descending for dates
   })
   const [showFilters, setShowFilters] = useState(false)
   const [errors, setErrors] = useState({})
@@ -105,13 +105,21 @@ function Search() {
     }
   }
 
+  const handleSortChange = (sortBy, sortOrder) => {
+    setFilters(prev => ({
+      ...prev,
+      sortBy,
+      sortOrder
+    }))
+  }
+
   const clearFilters = () => {
     setFilters({
       category: '',
       minPrice: '',
       maxPrice: '',
-      sortBy: 'name',
-      sortOrder: 'asc'
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
     })
     setErrors({})
   }
@@ -122,6 +130,33 @@ function Search() {
     setTimeout(() => {
       handleSearch()
     }, 100)
+  }
+
+  // Get sort order options based on selected sort field
+  const getSortOrderOptions = () => {
+    switch (filters.sortBy) {
+      case 'price':
+        return [
+          { value: 'asc', label: 'Low to High' },
+          { value: 'desc', label: 'High to Low' }
+        ]
+      case 'name':
+        return [
+          { value: 'asc', label: 'A to Z' },
+          { value: 'desc', label: 'Z to A' }
+        ]
+      case 'createdAt':
+      case 'updatedAt':
+        return [
+          { value: 'desc', label: 'Newest First' },
+          { value: 'asc', label: 'Oldest First' }
+        ]
+      default:
+        return [
+          { value: 'asc', label: 'Ascending' },
+          { value: 'desc', label: 'Descending' }
+        ]
+    }
   }
 
   return (
@@ -143,23 +178,12 @@ function Search() {
           T-Shirts
         </button>
         <button
-          onClick={() => handleQuickSearch('shoes')}
+          onClick={() => handleQuickSearch('hoodie')}
           className="px-4 py-2 bg-gray/10 text-gray rounded-full hover:bg-yellow hover:text-black transition-all duration-200 font-body text-sm"
         >
-          Shoes
+          Hoodies
         </button>
-        <button
-          onClick={() => handleQuickSearch('jacket')}
-          className="px-4 py-2 bg-gray/10 text-gray rounded-full hover:bg-yellow hover:text-black transition-all duration-200 font-body text-sm"
-        >
-          Jackets
-        </button>
-        <button
-          onClick={() => handleQuickSearch('dress')}
-          className="px-4 py-2 bg-gray/10 text-gray rounded-full hover:bg-yellow hover:text-black transition-all duration-200 font-body text-sm"
-        >
-          Dresses
-        </button>
+       
       </div>
 
       {/* Search Form */}
@@ -260,11 +284,36 @@ function Search() {
                   onChange={(e) => handleFilterChange('sortBy', e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow font-body"
                 >
-                  <option value="name">Name</option>
-                  <option value="price">Price</option>
                   <option value="createdAt">Newest</option>
                   <option value="updatedAt">Recently Updated</option>
+                  <option value="price">Price</option>
+                  <option value="name">Name</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Sort Order Selection */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 font-body-semibold">
+                  Sort Order
+                </label>
+                <div className="flex gap-2">
+                  {getSortOrderOptions().map(option => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleSortChange(filters.sortBy, option.value)}
+                      className={`flex-1 py-2 px-4 rounded-lg font-body font-medium transition-all duration-300 ${
+                        filters.sortOrder === option.value
+                          ? 'bg-yellow text-black'
+                          : 'bg-gray/10 text-gray hover:bg-gray/20'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -331,6 +380,10 @@ function Search() {
                 <h2 className="text-xl font-semibold text-black font-body-semibold">
                   Found {results.pagination?.totalCount || results.products.length} product{results.products.length !== 1 ? 's' : ''}
                 </h2>
+                {/* Current Sort Info */}
+                <div className="text-sm text-gray font-body">
+                  Sorted by: {getSortOrderOptions().find(opt => opt.value === filters.sortOrder)?.label || filters.sortOrder}
+                </div>
               </div>
             )}
 
@@ -349,22 +402,21 @@ function Search() {
               </div>
             )}
 
-          {results.products.length > 0 && (
-    <div className="flex flex-wrap gap-2 justify-start items-center">
-        {results.products.map(product => (
-                <ProductCard 
-                    name={product.name} 
-                    id={product.id} 
-                    description={product.description} 
-                    price={product.price} 
-                    discount={product.discount} 
+            {results.products.length > 0 && (
+              <div className="flex flex-wrap gap-2 justify-start items-center">
+                {results.products.map(product => (
+                  <ProductCard
+                    key={product.id}
+                    name={product.name}
+                    id={product.id}
+                    description={product.description}
+                    price={product.price}
+                    discount={product.discount}
                     image={product.productImages?.[0]?.imageUrl}
-                />
-        ))}
-    </div>
-)}
-
-
+                  />
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

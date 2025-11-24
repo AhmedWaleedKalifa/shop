@@ -2,7 +2,7 @@ import React from 'react'
 import { categoryService } from "../services/categoryService"
 import { useEffect } from 'react';
 import { useState } from 'react';
-import {Link, useLocation} from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,11 +16,11 @@ function Navbar() {
             try {
                 const data = await categoryService.getAll();
                 setCategories(Array.isArray(data) ? data : data.categories || []);
-            }  finally {
+            } finally {
                 setLoading(false);
             }
         }
-    
+
         loadCategories();
     }, []);
 
@@ -32,30 +32,31 @@ function Navbar() {
     };
 
     return (
-        <nav className=' flex flex-col sticky left-0 top-0 z-50 max-w-[100vw] h-auto m-0 p-0 bg-white/90 backdrop-blur-sm border-b border-gray/20'>
+        <nav className=' flex flex-col sticky left-0 top-0 z-50 max-w-[100vw] h-auto m-0 p-0 bg-white/90 backdrop-blur-sm border-b border-gray/20 justify-center' title='Search'
+        >
             <Link to="/search" aria-label="Search products">
-                <FontAwesomeIcon 
-                    icon={faMagnifyingGlass} 
-                    className="absolute right-4 top-4 font-body" 
+                <FontAwesomeIcon
+                    icon={faMagnifyingGlass}
+                    className="absolute right-2 md:right-8 top-4 font-body text-black hover:text-yellow transition-all duration-300"
                 />
             </Link>
-            
-            <header className='flex flex-row justify-center'>
-                <img 
-                    src="logo.jpg" 
-                    alt="Werzu Store logo" 
-                    className='h-12 bg-cover font-body' 
+
+            <Link className='flex flex-row justify-center ' to="/" title='Logo'>
+                <img
+                    src="logo.jpg"
+                    alt="Werzu Store logo"
+                    className='h-12 bg-cover font-body'
                 />
-            </header>
-            
+            </Link>
+
             <section className=''>
                 {loading && (
                     <p className="font-body">Loading...</p>
                 )}
-                
+
                 {categories && (
-                    <ul 
-                        role="navigation" 
+                    <ul
+                        role="navigation"
                         aria-label="Main categories"
                         className='flex flex-row text-nowrap w-full gap-3 overflow-x-auto pl-2 lg:pl-8 p-1 font-body'
                     >
@@ -66,7 +67,7 @@ function Navbar() {
                                 </span>
                             </Link>
                         </li>
-                        
+
                         {categories.map(category => (
                             <li key={category.id}>
                                 <Link to={`/category/${category.id}`} title={category.name}>

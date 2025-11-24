@@ -157,31 +157,312 @@ async function createProduct(req, res) {
   }
 }
 
+async function updateProduct(req, res) {
+  try {
+    const { id } = req.params;
+    
+    console.log('🔄 UPDATE - Original ID:', id);
+    
+    // Clean the ID - remove any surrounding quotes
+    const cleanId = id.replace(/^"+|"+$/g, '');
+    console.log('🔄 UPDATE - Cleaned ID:', cleanId);
+    
+    // First, get ALL products to find the exact match
+    const allProducts = await prisma.product.findMany({
+      select: { id: true, name: true }
+    });
+    
+    // Find the exact product ID from database
+    const productMatch = allProducts.find(p => {
+      const dbId = p.id.replace(/^"+|"+$/g, '');
+      return dbId === cleanId;
+    });
+    
+    if (!productMatch) {
+      console.log('❌ Product not found after cleaning ID');
+      console.log('📋 Available IDs:', allProducts.map(p => p.id));
+      return res.status(404).json({ 
+        error: "Product not found",
+        requestedId: id,
+        cleanedId: cleanId,
+        availableIds: allProducts.map(p => p.id)
+      });
+    }
+    
+    console.log('✅ Product found:', productMatch.name);
+    
+    // Use the EXACT ID from database for the query
+    const exactId = productMatch.id;
+    
+    const existing = await prisma.product.findUnique({
+      where: { 
+        id: exactId
+      },
+      include: {
+        productImages: true,
+        productSizes: true,
+        productColors: true,
+        categories: true,
+      },
+    });
+
+    if (!existing) {
+      console.log('❌ Failed to find with exact ID - this should not happen');
+      return res.status(404).json({ 
+        error: "Product lookup failed with exact ID",
+        exactId: exactId
+      });
+    }
+
+    console.log('✅ Successfully retrieved product for update:', existing.name);
+
+    const {
+      name,
+      description,
+      price,
+      material,
+      quantity,
+      status,
+      discount,
+      sku,
+      categoryIds,
+      productSizes,
+      productColors,
+      removedImageIds,
+    } = req.body;
+
+    let data = {};
+
+    // Update base fields
+    if (name !== undefined) data.name = name;
+    if (description !== undefined) data.description = description;
+    if (price !== undefined) data.price = parseFloat(price);
+    if (material !== undefined) data.material = material;
+    if (quantity !== undefined) data.quantity = parseInt(quantity);
+    if (status !== undefined) data.status = status;
+    if (discount !== undefined) data.discount = parseFloat(discount);
+    if (sku !== undefined) data.sku = sku;
+
+    // Handle arrays
+    if (categoryIds) {
+      try {
+        const parsedCategoryIds = Array.isArray(categoryIds) ? categoryIds : JSON.parse(categoryIds);
+        data.categories = {
+          set: parsedCategoryIds.map((id) => ({ id })),
+        };
+      } catch (error) {
+        return res.status(400).json({ error: "Invalid categoryIds format" });
+      }
+    }
+
+    // Handle productColors
+    if (productColors) {
+      try {
+        const parsedColors = Array.isArray(productColors) ? productColors : JSON.parse(productColors);
+        
+        // Delete existing colors
+        await prisma.productColor.deleteMany({
+          where: { productId: exactId }
+        });
+
+        // Create new colors
+        if (parsedColors.length > 0) {
+          data.productColors = {
+            create: parsedColors.map((c, index) => ({
+              colorName: c.colorName,
+              hexCode: c.hexCode,
+              displayOrder: index + 1
+            })),
+          };
+        }
+      } catch (error) {
+        return res.status(400).json({ error: "Invalid productColors format" });
+      }
+    }
+
+    // Handle productSizes
+    if (productSizes) {
+      try {
+        const parsedSizes = Array.isArray(productSizes) ? productSizes : JSON.parse(productSizes);
+        
+        // Delete existing sizes
+        await prisma.productSize.deleteMany({
+          where: { productId: exactId }
+        });
+
+        // Create new sizes
+        if (parsedSizes.length > 0) {
+          data.productSizes = {
+            create: parsedSizes.map((s, index) => ({
+              size: parseInt(s.size),
+              sizeSymbol: s.sizeSymbol,
+              displayOrder: index + 1
+            })),
+          };
+        }
+      } catch (error) {
+        return res.status(400).json({ error: "Invalid productSizes format" });
+      }
+    }
+
+    // 🆕 AUTO-REPLACE IMAGES: Delete ALL old images if new ones are uploaded
+    if (req.files && req.files.length > 0) {
+      console.log('🔄 Auto-replacing old images with new ones');
+      
+      // Delete all existing images from Cloudinary
+      if (existing.productImages && existing.productImages.length > 0) {
+        console.log(`🗑️ Deleting ${existing.productImages.length} old images from Cloudinary`);
+        for (const oldImage of existing.productImages) {
+          try {
+            await deleteImageFromCloudinary(oldImage.imageUrl);
+            console.log(`✅ Deleted old image from Cloudinary: ${oldImage.id}`);
+          } catch (cloudinaryError) {
+            console.error(`❌ Failed to delete old image from Cloudinary: ${oldImage.id}`, cloudinaryError);
+          }
+        }
+        
+        // Delete all existing images from database
+        await prisma.productImage.deleteMany({
+          where: { productId: exactId }
+        });
+        console.log('✅ Cleared old images from database');
+      }
+
+      // Create new images
+      const newImages = req.files.map((file, index) => ({
+        imageUrl: file.path,
+        altText: `${data.name || existing.name}-image-${index + 1}`,
+        isPrimary: index === 0, // First image is primary
+        displayOrder: index + 1,
+      }));
+
+      data.productImages = {
+        create: newImages,
+      };
+      
+      console.log(`📸 Added ${newImages.length} new images`);
+    }
+    // Handle specific image removals (if no new images but removedImageIds provided)
+    else if (removedImageIds) {
+      try {
+        const parsedRemovedImages = Array.isArray(removedImageIds) ? removedImageIds : JSON.parse(removedImageIds);
+        
+        if (parsedRemovedImages.length > 0) {
+          const imgsToDelete = existing.productImages.filter((img) =>
+            parsedRemovedImages.includes(img.id)
+          );
+
+          // Delete from Cloudinary
+          for (const img of imgsToDelete) {
+            try {
+              await deleteImageFromCloudinary(img.imageUrl);
+              console.log(`✅ Deleted specific image from Cloudinary: ${img.id}`);
+            } catch (cloudinaryError) {
+              console.error(`❌ Failed to delete image from Cloudinary: ${img.id}`, cloudinaryError);
+            }
+          }
+
+          // Delete from database
+          await prisma.productImage.deleteMany({
+            where: {
+              id: { in: parsedRemovedImages },
+              productId: exactId
+            }
+          });
+          console.log(`✅ Deleted ${parsedRemovedImages.length} specific images from database`);
+        }
+      } catch (error) {
+        return res.status(400).json({ error: "Invalid removedImageIds format" });
+      }
+    }
+
+    // Perform the update
+    const updatedProduct = await prisma.product.update({
+      where: { id: exactId },
+      data,
+      include: {
+        productImages: true,
+        productSizes: true,
+        productColors: true,
+        categories: true,
+      },
+    });
+
+    console.log('✅ Product updated successfully');
+
+    res.status(200).json({
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+
+  } catch (error) {
+    console.error('💥 Update product error:', error);
+    res.status(500).json({
+      message: "Failed Updating Product",
+      error: error.message
+    });
+  }
+}
 async function deleteProduct(req, res) {
   try {
     const { id } = req.params;
-    const available = await prisma.product.findUnique({
-      where: { id },
+    console.log('🗑️ DELETE - Original ID:', id);
+    
+    // Clean the ID
+    const cleanId = id.replace(/^"+|"+$/g, '');
+    
+    // Find exact product ID from database
+    const allProducts = await prisma.product.findMany({
+      select: { id: true, name: true }
+    });
+    
+    const productMatch = allProducts.find(p => {
+      const dbId = p.id.replace(/^"+|"+$/g, '');
+      return dbId === cleanId;
+    });
+    
+    if (!productMatch) {
+      return res.status(404).json({ 
+        error: "Product not found",
+        requestedId: id,
+        cleanedId: cleanId
+      });
+    }
+    
+    const exactId = productMatch.id;
+    
+    // Get product with images using exact ID
+    const product = await prisma.product.findUnique({
+      where: { id: exactId },
       include: { productImages: true },
     });
 
-    const imagesArray = available.productImages;
-    for (let i = 0; i < imagesArray.length; i++) {
-      deleteImageFromCloudinary(imagesArray[i].imageUrl);
+    // Delete images from Cloudinary
+    if (product.productImages && product.productImages.length > 0) {
+      for (const image of product.productImages) {
+        try {
+          await deleteImageFromCloudinary(image.imageUrl);
+        } catch (cloudinaryError) {
+          console.error(`Failed to delete image: ${image.id}`, cloudinaryError);
+        }
+      }
     }
-    const product = await prisma.product.delete({
-      where: { id },
+
+    // Delete the product
+    await prisma.product.delete({
+      where: { id: exactId },
     });
-    if (!product) {
-      res.status(400).json({ error: "This Product Not Found" });
-    }
-    res
-      .status(200)
-      .json({ message: "Product Deleted Successfully", product: product });
+
+    res.status(200).json({ 
+      message: "Product Deleted Successfully"
+    });
+    
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed Deleting Product", error: error.message });
+    console.error('💥 Delete error:', error);
+    res.status(500).json({ 
+      message: "Failed Deleting Product", 
+      error: error.message 
+    });
   }
 }
 async function getUserProducts(req, res) {
@@ -262,186 +543,7 @@ async function getProductById(req, res) {
     });
   }
 }
-async function updateProduct(req, res) {
-  try {
-    const { id } = req.params;
 
-    const existing = await prisma.product.findUnique({
-      where: { id },
-      include: {
-        productImages: true,
-        productSizes: true,
-        productColors: true,
-        categories: true,
-      },
-    });
-
-    if (!existing) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const {
-      name,
-      description,
-      price,
-      material,
-      quantity,
-      status,
-      discount,
-      sku,
-      categoryIds,
-      productSizes,
-      productColors,
-      removedImageIds,
-    } = req.body;
-
-    let data = {};
- 
-
-    // const imagesArray = existing.productImages;
-    // for (let i = 0; i < imagesArray.length; i++) {
-    //   deleteImageFromCloudinary(imagesArray[i].imageUrl);
-    // }
-    
-    // Update base fields
-    if (name !== undefined) data.name = name;
-    if (description !== undefined) data.description = description;
-    if (price !== undefined) data.price = Number(price);
-    if (material !== undefined) data.material = material;
-    if (quantity !== undefined) data.quantity = Number(quantity);
-    if (status !== undefined) data.status = status;
-    if (discount !== undefined) data.discount = Number(discount);
-    if (sku !== undefined) data.sku = sku;
-
-    // -----------------------------
-    // Parse Arrays
-    // -----------------------------
-    let parsedCategoryIds = null;
-    let parsedSizes = null;
-    let parsedColors = null;
-    let parsedRemovedImages = null;
-
-    if (categoryIds) {
-      try {
-        parsedCategoryIds = JSON.parse(categoryIds);
-        if (!Array.isArray(parsedCategoryIds))
-          return res.status(400).json({ error: "categoryIds must be array" });
-
-        data.categories = {
-          set: [], // remove all previous
-          connect: parsedCategoryIds.map((id) => ({ id })),
-        };
-      } catch (error) {
-        return res.status(400).json({ error: "Invalid categoryIds JSON" });
-      }
-    }
-
-    if (productSizes) {
-      try {
-        parsedSizes = JSON.parse(productSizes);
-        if (!Array.isArray(parsedSizes))
-          return res.status(400).json({ error: "productSizes must be array" });
-
-        data.productSizes = {
-          deleteMany: {}, // removes all previous sizes
-          create: parsedSizes.map((s) => ({
-            size: s.size,
-            sizeSymbol: s.sizeSymbol,
-          })),
-        };
-      } catch (error) {
-        return res.status(400).json({ error: "Invalid productSizes JSON" });
-      }
-    }
-
-    if (productColors) {
-      try {
-        parsedColors = JSON.parse(productColors);
-        if (!Array.isArray(parsedColors))
-          return res.status(400).json({ error: "productColors must be array" });
-
-        data.productColors = {
-          deleteMany: {},
-          create: parsedColors.map((c) => ({
-            colorName: c.colorName,
-            hexCode: c.hexCode,
-          })),
-        };
-      } catch (error) {
-        return res.status(400).json({ error: "Invalid productColors JSON" });
-      }
-    }
-
-    if (removedImageIds) {
-      try {
-        parsedRemovedImages = JSON.parse(removedImageIds);
-        if (!Array.isArray(parsedRemovedImages))
-          return res.status(400).json({ error: "removedImageIds must be array" });
-      } catch (error) {
-        return res.status(400).json({ error: "Invalid removedImageIds JSON" });
-      }
-    }
-
-    // -----------------------------
-    // Handle NEW uploaded images
-    // -----------------------------
-    if (req.files && req.files.length > 0) {
-      const newImages = req.files.map((file, index) => ({
-        imageUrl: file.path,
-        altText: `${existing.name || name}-image-${Date.now()}-${index}`,
-        isPrimary: false,
-        displayOrder: existing.productImages.length + index + 1,
-      }));
-
-      data.productImages = {
-        create: newImages,
-      };
-    }
-
-    // -----------------------------
-    // Delete removed images from Cloudinary + Prisma
-    // -----------------------------
-    if (parsedRemovedImages?.length > 0) {
-      const imgsToDelete = existing.productImages.filter((img) =>
-        parsedRemovedImages.includes(img.id)
-      );
-
-      // Delete from cloud
-      for (const img of imgsToDelete) {
-        await deleteImageFromCloudinary(img.imageUrl);
-      }
-
-      data.productImages = {
-        ...(data.productImages || {}),
-        deleteMany: parsedRemovedImages.map((id) => ({ id })),
-      };
-    }
-
-    // -----------------------------
-    // UPDATE PRODUCT
-    // -----------------------------
-    const updatedProduct = await prisma.product.update({
-      where: { id },
-      data,
-      include: {
-        productImages: true,
-        productSizes: true,
-        productColors: true,
-        categories: true,
-      },
-    });
-
-    res.status(200).json({
-      message: "Product updated successfully",
-      product: updatedProduct,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed Updating Product",
-      error: error.message,
-    });
-  }
-}
 // Update individual product image
 async function updateImageById(req, res) {
   try {
