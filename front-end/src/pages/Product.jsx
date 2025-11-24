@@ -3,8 +3,11 @@ import { useParams } from 'react-router'
 import { productService } from "../services/productService"
 import { getApiError } from '../utils/errorHandler';
 import BuyButton from '../components/BuyButton';
+import { useLocation } from 'react-router-dom';
 
 function Product() {
+    const location = useLocation();
+
   const { id } = useParams()
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +72,7 @@ function Product() {
     }
     window.scrollTo(0, 0);
     loadProduct()
-  }, [id])
+  }, [id,location.pathname])
 
   if (loading) {
     return <div className="text-center py-10 text-gray min-h-[60vh]">Loading...</div>;

@@ -50,9 +50,6 @@ function Navbar() {
             </Link>
 
             <section className=''>
-                {loading && (
-                    <p className="font-body">Loading...</p>
-                )}
 
                 {categories && (
                     <ul

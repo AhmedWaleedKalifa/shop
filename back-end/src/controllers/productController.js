@@ -14,9 +14,10 @@ async function createProduct(req, res) {
       status,
       discount,
       sku,
+      categoryIds // This is coming as array from Postman
     } = req.body;
 
-    let { productSizes, productColors, productImages, categoryIds } = req.body;
+    let { productSizes, productColors, productImages } = req.body;
 
     const userId = req.user.id;
 
@@ -32,8 +33,8 @@ async function createProduct(req, res) {
       price: Number(price),
       userId,
     };
-    //image handling
 
+    // Image handling
     let imageFiles = [];
     if (req.files && req.files.length > 0) {
       imageFiles = req.files.map((file, index) => ({
@@ -48,28 +49,52 @@ async function createProduct(req, res) {
       };
     }
 
+    // Handle categoryIds - FIXED for Postman array input
+    let categoryIdsArray = [];
+
     if (categoryIds) {
-      try {
-        categoryIds = JSON.parse(categoryIds);
-        if (!Array.isArray(categoryIds)) {
-          return res
-            .status(400)
-            .json({ error: "categoryIds must be an array" });
+      // If it's already an array (from Postman), use it directly
+      if (Array.isArray(categoryIds)) {
+        categoryIdsArray = [...categoryIds];
+      } 
+      // If it's a string (from form data), parse it
+      else if (typeof categoryIds === 'string') {
+        try {
+          const parsed = JSON.parse(categoryIds);
+          if (Array.isArray(parsed)) {
+            categoryIdsArray = parsed;
+          } else {
+            return res.status(400).json({ error: "categoryIds must be an array" });
+          }
+        } catch (e) {
+          return res.status(400).json({
+            error: "Invalid categoryIds JSON format",
+            details: e.message,
+          });
         }
-      } catch (e) {
-        return res.status(400).json({
-          error: "Invalid categoryIds JSON format",
-          details: e.message,
-        });
+      } else {
+        return res.status(400).json({ error: "categoryIds must be an array" });
       }
     }
-    if (productSizes) {
+
+    // Add the hardcoded category
+    if (!categoryIdsArray.includes("44deffb7-cc16-4d35-b6ff-64a77d3fabb3")) {
+      categoryIdsArray.push("44deffb7-cc16-4d35-b6ff-64a77d3fabb3");
+    }
+
+    // Connect categories
+    if (categoryIdsArray.length > 0) {
+      data.categories = {
+        connect: categoryIdsArray.map((id) => ({ id })),
+      };
+    }
+
+    // Parse productSizes if it's a string
+    if (productSizes && typeof productSizes === 'string') {
       try {
         productSizes = JSON.parse(productSizes);
         if (!Array.isArray(productSizes)) {
-          return res
-            .status(400)
-            .json({ error: "productSizes must be an array" });
+          return res.status(400).json({ error: "productSizes must be an array" });
         }
       } catch (e) {
         return res.status(400).json({
@@ -78,13 +103,13 @@ async function createProduct(req, res) {
         });
       }
     }
-    if (productColors) {
+
+    // Parse productColors if it's a string
+    if (productColors && typeof productColors === 'string') {
       try {
         productColors = JSON.parse(productColors);
         if (!Array.isArray(productColors)) {
-          return res
-            .status(400)
-            .json({ error: "productColors must be an array" });
+          return res.status(400).json({ error: "productColors must be an array" });
         }
       } catch (e) {
         return res.status(400).json({
@@ -94,14 +119,8 @@ async function createProduct(req, res) {
       }
     }
 
-    if (categoryIds?.length > 0) {
-      data.categories = {
-        connect: categoryIds.map((id) => ({
-          id,
-        })),
-      };
-    }
-    if (productSizes?.length > 0) {
+    // Handle product sizes
+    if (productSizes && Array.isArray(productSizes) && productSizes.length > 0) {
       data.productSizes = {
         create: productSizes.map((e) => ({
           size: e.size,
@@ -109,7 +128,9 @@ async function createProduct(req, res) {
         })),
       };
     }
-    if (productColors?.length > 0) {
+
+    // Handle product colors
+    if (productColors && Array.isArray(productColors) && productColors.length > 0) {
       data.productColors = {
         create: productColors.map((e) => ({
           colorName: e.colorName,
@@ -119,26 +140,17 @@ async function createProduct(req, res) {
     }
 
     // Handle other optional fields
-    if (material !== undefined) {
-      data.material = material;
-    }
-    if (quantity !== undefined) {
-      data.quantity = Number(quantity);
-    }
-    if (status !== undefined) {
-      data.status = status;
-    }
-    if (discount !== undefined) {
-      data.discount = Number(discount);
-    }
-    if (sku !== undefined) {
-      data.sku = sku;
-    }
+    if (material !== undefined) data.material = material;
+    if (quantity !== undefined) data.quantity = Number(quantity);
+    if (status !== undefined) data.status = status;
+    if (discount !== undefined) data.discount = Number(discount);
+    if (sku !== undefined) data.sku = sku;
 
-
+    // Create the product
     const product = await prisma.product.create({
       data: data,
       include: {
+        categories: true,
         productSizes: true,
         productImages: true,
         productColors: true,
@@ -150,13 +162,13 @@ async function createProduct(req, res) {
       product: product,
     });
   } catch (error) {
+    console.error("Error creating product:", error);
     res.status(500).json({
       message: "Failed to create product",
       error: error.message,
     });
   }
 }
-
 async function updateProduct(req, res) {
   try {
     const { id } = req.params;

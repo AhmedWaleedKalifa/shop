@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { categoryService } from "../services/categoryService";
 import Navbar from '../components/Navbar';
 import CategoryCard from '../components/CategoryCard';
+import { useLocation } from 'react-router-dom';
 
 // Simple error handler function
 function getApiError(error) {
+    const location = useLocation();
+
   if (error?.response?.data?.message) {
     return error.response.data.message;
   }
@@ -18,6 +21,7 @@ function Home() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+    const location = useLocation();
 
   useEffect(() => {
     async function loadCategories() {
@@ -33,7 +37,7 @@ function Home() {
     window.scrollTo(0, 0);
 
     loadCategories();
-  }, []);
+  }, [location.pathname]);
 
   if (loading) {
     return <div className="text-center py-10 text-gray min-h-screen">Loading...</div>;

@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react'
 import ProductCard from '../components/ProductCard'
 import { productService } from '../services/productService'
 import { categoryService } from '../services/categoryService'
+import { useLocation } from 'react-router-dom';
 
 function Search() {
+    const location = useLocation();
+
   const [searchQuery, setSearchQuery] = useState('')
   const [filters, setFilters] = useState({
     category: '',
@@ -26,7 +29,7 @@ function Search() {
   // Fetch available categories and price range on component mount
   useEffect(() => {
     fetchInitialData()
-  }, [])
+  }, [location.pathname])
 
   const fetchInitialData = async () => {
     try {

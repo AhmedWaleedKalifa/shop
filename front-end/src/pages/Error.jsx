@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router'
+
 function Error() {
+
   return (
 <main className='w-full flex flex-col items-center justify-center h-screen bg-white font-body' role="main">
     <div className="text-center">

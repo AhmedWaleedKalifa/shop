@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useLocation } from 'react-router-dom'
 import { getApiError } from '../utils/errorHandler';
 import { categoryService } from '../services/categoryService';
 import ProductCard from '../components/ProductCard';
 
 function Category() {
+  const location = useLocation();
   const { id } = useParams();
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
@@ -14,12 +15,16 @@ function Category() {
   useEffect(() => {
     async function loadData() {
       try {
+        setLoading(true);
+        setErrorMsg(""); // Reset error on new load
+        
         let categoryData = await categoryService.getById(id);
         categoryData = categoryData.category;
         
         let productsData = await categoryService.getCategoryProducts(id);
         productsData = productsData.products;
         console.log(productsData)
+        
         if (productsData) {
           setProducts(productsData);
         } else {
@@ -40,6 +45,7 @@ function Category() {
         setLoading(false);
       }
     }
+
     window.scrollTo(0, 0);
 
     if (id) {
@@ -49,7 +55,7 @@ function Category() {
       setErrorMsg("No category ID provided");
     }
 
-  }, [id]);
+  }, [id, location.key]); // Use location.key instead of location.pathname
 
   if (loading) {
     return <div className="text-center py-10 text-gray min-h-[70vh]">Loading...</div>;
