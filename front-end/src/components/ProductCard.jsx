@@ -14,6 +14,7 @@ function ProductCard({ name, id, description, price, discount, image }) {
             </div>
         )}
         <img
+            loading="lazy"
             src={image}
             alt={name}
             className='w-full h-full object-cover'

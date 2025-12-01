@@ -78,8 +78,8 @@ async function createProduct(req, res) {
     }
 
     // Add the hardcoded category
-    if (!categoryIdsArray.includes("44deffb7-cc16-4d35-b6ff-64a77d3fabb3")) {
-      categoryIdsArray.push("44deffb7-cc16-4d35-b6ff-64a77d3fabb3");
+    if (!categoryIdsArray.includes(process.env.ALL_PRODUCTS_CATEGORY)) {
+      categoryIdsArray.push(process.env.ALL_PRODUCTS_CATEGORY);
     }
 
     // Connect categories

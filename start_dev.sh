@@ -12,10 +12,10 @@ open_tab() {
 open_tab "code" "$SCRIPT_DIR" "cd ../ && code shop; exit"
 
 # Open google
-open_tab "google" "$SCRIPT_DIR" "google-chrome; exit"
+open_tab "google" "$SCRIPT_DIR" " bg google-chrome; exit"
 
 # Open postman
-open_tab "postman" "$SCRIPT_DIR" "postman; exit"
+open_tab "postman" "$SCRIPT_DIR" " bg postman; exit"
 
 
 # Backend
