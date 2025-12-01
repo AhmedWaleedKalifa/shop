@@ -47,6 +47,7 @@ function ProductCardSkeleton() {
         <div className="px-2 h-4">
           {/* This is the invisible "." paragraph - make skeleton same height */}
           <Skeleton height={16} width="30%" className="opacity-0" />
+
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { categoryService } from "../src/services/categoryService"
+import { categoryService } from "./services/categoryService"
 
 // import { getApiError } from "../utils/getApiError";
 import CategoryCard from "./components/CategoryCard"
