@@ -20,8 +20,6 @@ const corsOptions = {
     const allowedOrigins = [
       process.env.FRONT_END_URL, // Your main frontend URL
       "https://werzu.netlify.app", // Your main Netlify URL
-      /\.werzu\.netlify\.app$/, // All Netlify subdomains (deploy previews)
-      /^https:\/\/[a-zA-Z0-9-]+--werzu\.netlify\.app$/, // All Netlify deploy previews
     ];
     
     // Check if the origin matches any allowed pattern
