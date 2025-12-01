@@ -2,12 +2,12 @@ import apiClient from "./apiClient";
 
 export const authService = {
   register: async (data) => {
-    const res = await apiClient.post("/auth/register", data);
+    const res = await apiClient.post("/register", data);
     return res.data;
   },
 
   login: async (email, password) => {
-    const res = await apiClient.post("/auth/login", { email, password });
+    const res = await apiClient.post("/login", { email, password });
 
     if (res.data.token) {
       localStorage.setItem("token", res.data.token);
@@ -17,7 +17,7 @@ export const authService = {
   },
 
   logout: async () => {
-    const res = await apiClient.get("/auth/logout");
+    const res = await apiClient.get("/logout");
     localStorage.removeItem("token");
     return res.data;
   },

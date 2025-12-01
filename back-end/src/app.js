@@ -23,10 +23,10 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
-app.use("/api/auth", authRouter);
-app.use("/api/users", userRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/products", productRoutes);
+app.use("/auth", authRouter);
+app.use("/users", userRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/products", productRoutes);
 
 // app.use(errorHandler);
 
