@@ -22,10 +22,10 @@ function CategoryCard({ id, leftImage, rightImage, name, buttonText }) {
     
     {/* Content Overlay */}
     <div className="absolute inset-0 flex flex-col justify-end items-center pb-8 lg:pb-12">
-        <h2 className="text-white text-3xl lg:text-5xl font-bold mb-4 text-center font-heading tracking-wide">
+        <h2 className="text-white text-3xl lg:text-5xl font-bold mb-4 text-center font-heading tracking-wide capitalize">
             {name}
         </h2>
-        <span className="text-white underline px-6 py-3 rounded-lg font-body font-semibold  transition duration-300 hover:text-yellow">
+        <span className="text-white underline px-6 py-3 rounded-lg font-body font-semibold  transition duration-300 hover:text-yellow capitalize">
             {buttonText}
         </span>
     </div>

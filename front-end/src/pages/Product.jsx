@@ -292,7 +292,7 @@ function Product() {
       {/* Right Section - Product Details */}
       <section className='rightDiv lg:w-[60%] lg:px-8' aria-label="Product details">
         <header className="mb-6">
-          <h1 className="p-2 lg:p-0 text-2xl font-semibold text-black font-body-semibold">
+          <h1 className="p-2 lg:p-0 text-2xl font-semibold text-black font-body-semibold capitalize">
             {product.name}
           </h1>
           <p className='text-gray text-lg mt-2 font-body p-2'>{product.description}</p>
@@ -326,7 +326,7 @@ function Product() {
             {product.productSizes.map((sizeOption) => (
               <button
                 key={sizeOption?.id}
-                className={`px-4 py-2 rounded-lg border-2 transition-all font-body ${isActiveSize(sizeOption.sizeSymbol) ? "activeSize border-yellow bg-yellow text-black" : "inActiveSize border-gray-300 text-gray hover:border-yellow"}`}
+                className={`px-4 py-2 rounded-lg border-2 transition-all font-body capitalize ${isActiveSize(sizeOption.sizeSymbol) ? "activeSize border-yellow bg-yellow text-black" : "inActiveSize border-gray-300 text-gray hover:border-yellow"}`}
                 onClick={() => handleClickSize(sizeOption.sizeSymbol)}
                 aria-pressed={isActiveSize(sizeOption.sizeSymbol)}
               >
@@ -347,7 +347,7 @@ function Product() {
                 aria-pressed={isActiveColor(colorOption.colorName)}
               >
                 <div
-                  className={`w-8 h-8 rounded-full border-2 transition-all duration-300  ${isActiveColor(colorOption.colorName) ? "border-yellow scale-110" : "border-gray-300"}`}
+                  className={`w-8 h-8 rounded-full border-2 transition-all duration-300 capitalize  ${isActiveColor(colorOption.colorName) ? "border-yellow scale-110" : "border-gray-300"}`}
                   style={{ backgroundColor: colorOption.hexCode }}
                   aria-label={colorOption.colorName}
                 />

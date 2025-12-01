@@ -145,7 +145,7 @@ function Category() {
   return (
     <main className="bg-white m-2 min-h-[70vh] font-body">
       <header className="mb-4">
-        <h1 className='font-bold text-black text-2xl lg:text-3xl font-heading tracking-wide'>
+        <h1 className='font-bold text-black text-2xl lg:text-3xl font-heading tracking-wide capitalize'>
           {category?.name}
         </h1>
         {products.length > 0 && (

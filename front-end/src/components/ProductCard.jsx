@@ -21,7 +21,7 @@ function ProductCard({ name, id, description, price, discount, image }) {
         />
     </article>
     
-    <h3 className="px-2 pt-2 mb-1 text-base font-semibold line-clamp-1 font-body-medium lg:text-xs lg:font-normal">
+    <h3 className="px-2 pt-2 mb-1 text-base font-semibold line-clamp-1 font-body-medium lg:text-xs lg:font-normal capitalize">
         {name}
     </h3>
     

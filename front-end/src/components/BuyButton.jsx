@@ -43,7 +43,7 @@ Product ID: ${productId}`;
     onClick={handleWhatsAppClick}
     aria-label="Buy this product now"
 >
-    <div className='w-84 md:w-full h-10 flex tracking-wider flex-col items-center justify-center font-bold text-lg bg-yellow rounded-full hover:bg-black hover:text-yellow cursor-pointer transition-all duration-300 z-40'>
+    <div className='w-84 md:w-full h-10 flex tracking-wider flex-col items-center justify-center font-bold text-lg bg-yellow rounded-full hover:bg-black hover:text-yellow cursor-pointer transition-all duration-300 z-40 capitalize'>
         Buy Now
     </div>
 </button>

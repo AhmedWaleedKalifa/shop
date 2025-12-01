@@ -45,11 +45,11 @@ html {
 }
 
 .activeLink {
-    @apply w-fit inline-block font-semibold capitalize border-b-2 border-[#fac712] py-1 text-[#fac712] 
+    @apply  w-fit inline-block font-semibold capitalize border-b-2 border-[#fac712] py-1 text-[#fac712] 
 }
 
 .link {
-    @apply w-fit inline-block font-semibold capitalize border-b-2 border-transparent py-1 text-black
+    @apply  w-fit inline-block font-semibold capitalize border-b-2 border-transparent py-1 text-black
 }
 
 .searchIcon {
