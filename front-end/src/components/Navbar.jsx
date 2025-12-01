@@ -43,7 +43,7 @@ function Navbar() {
 
             <Link className='flex flex-row justify-center ' to="/" title='Logo'>
                 <img
-                    src="logo.jpg"
+                    src="/logo.jpg"
                     alt="Werzu Store logo"
                     className='h-12 bg-cover font-body'
                 />
