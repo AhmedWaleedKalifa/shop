@@ -26,9 +26,11 @@ open_tab "Backend2" "$SCRIPT_DIR/back-end" "echo backend"
 open_tab "Prisma" "$SCRIPT_DIR/back-end" "npx prisma studio"
 
 # Frontend
-open_tab "Frontend1" "$SCRIPT_DIR/front-end" "npm run dev"
-open_tab "Frontend2" "$SCRIPT_DIR/front-end"  "echo frontend"
+open_tab "Frontend1" "$SCRIPT_DIR/front-end/main-app" "npm run dev"
+open_tab "Frontend2" "$SCRIPT_DIR/front-end/main-app"  "echo main app"
 
+open_tab "Frontend2" "$SCRIPT_DIR/front-end/admin-portal"  "npm run dev"
+open_tab "Frontend2" "$SCRIPT_DIR/front-end/admin-portal"  "echo admin portal"
 
 
 echo "All development environments started!"
