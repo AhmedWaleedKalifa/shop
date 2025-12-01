@@ -32,7 +32,7 @@ function ProductCard({ name, id, description, price, discount, image }) {
     {discount !== 0 ? (
         <div className="font-body">
             <del className="px-2 pt-1 line-clamp-1 text-ellipsis overflow-x-hidden text-sm text-black">
-                {price} EGP
+                {(price).toFixed(2)} EGP
             </del>
             <p className="px-2 line-clamp-1 text-ellipsis overflow-x-hidden text-sm text-red font-semibold">
                 {(price - price * discount).toFixed(2)} EGP
