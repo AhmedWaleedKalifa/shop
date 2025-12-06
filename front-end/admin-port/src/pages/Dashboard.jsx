@@ -117,44 +117,7 @@ function Home() {
 
   return (
     <main className="mx-auto bg-gray min-h-screen font-body" role="main">
-      <div className="">
-        <section aria-label="All categories">
-          {loading ? (
-            // Show skeleton loaders while loading
-            <div className="space-y-2">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <CategoryCardSkeleton key={`skeleton-${index}`} />
-              ))}
-            </div>
-          ) : (
-            // Show actual categories when loaded
-            <>
-              {categories.map((cat) => (
-                <Suspense 
-                  key={cat.id} 
-                  fallback={<SimpleCategoryCardSkeleton />}
-                >
-                  <CategoryCard 
-                    id={cat.id} 
-                    buttonText={cat.buttonText}
-                    name={cat.name} 
-                    leftImage={cat.leftImage}
-                    rightImage={cat.rightImage} 
-                  />
-                </Suspense>
-              ))}
-              
-              {categories.length === 0 && (
-                <div className="text-gray-600 text-center py-20 font-body">
-                  <p className="text-2xl mb-4">📁</p>
-                  <p className="text-xl mb-2">No categories found</p>
-                  <p className="text-gray">Please check back later for new collections</p>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-      </div>
+     
     </main>
   );
 }

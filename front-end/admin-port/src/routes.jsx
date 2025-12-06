@@ -1,5 +1,5 @@
 import Error from "./pages/Error";
-import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
 import Category from "./pages/Category"
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -14,9 +14,7 @@ const routes = [
     {path: "page",
         element: <PageTemplate />,
     children:[
-        { path: "", element: <Home /> },
-        // { path: "login", element: <Login /> },
-        // { path: "register", element: <Register /> },
+        { path: "dashboard", element: <Dashboard /> },
         { path: "category/:id?", element: <Category /> },
         { path: "product/:id?", element: <Product /> },
         { path: "search", element: <Search /> },
