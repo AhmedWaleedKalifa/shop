@@ -1046,6 +1046,11 @@ const searchProducts = async (req, res) => {
             limit = 12
         } = req.query
 
+        // Parse numeric values
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+
         // Build where clause for Prisma
         const where = {
             AND: [
@@ -1069,34 +1074,89 @@ const searchProducts = async (req, res) => {
             ]
         }
 
-        // Calculate pagination
-        const skip = (parseInt(page) - 1) * parseInt(limit)
+        // First get total count for pagination
+        const totalCount = await prisma.product.count({
+            where: where.AND.length > 0 ? { AND: where.AND.filter(w => Object.keys(w).length > 0) } : undefined
+        });
 
-        // First, get all products that match the basic filters
-        const allProducts = await prisma.product.findMany({
-            where,
+        // Handle price filtering at database level if possible
+        // We'll filter by base price first, then apply discount logic
+        const priceFilter = {};
+        if (minPrice || maxPrice) {
+            // Convert discount to percentage adjustment
+            // This is approximate - for exact filtering we need to calculate
+            priceFilter.price = {};
+            if (minPrice) {
+                // Adjust min price for max discount (assuming max 50% discount)
+                priceFilter.price.gte = parseFloat(minPrice) * 0.5;
+            }
+            if (maxPrice) {
+                priceFilter.price.lte = parseFloat(maxPrice);
+            }
+            
+            if (Object.keys(priceFilter.price).length > 0) {
+                where.AND.push(priceFilter);
+            }
+        }
+
+        // Determine sort order for Prisma
+        let orderBy = {};
+        switch (sortBy) {
+            case 'price':
+                orderBy = { price: sortOrder === 'desc' ? 'desc' : 'asc' };
+                break;
+            case 'createdAt':
+                orderBy = { createdAt: sortOrder === 'desc' ? 'desc' : 'asc' };
+                break;
+            case 'updatedAt':
+                orderBy = { updatedAt: sortOrder === 'desc' ? 'desc' : 'asc' };
+                break;
+            case 'name':
+            default:
+                orderBy = { name: sortOrder === 'desc' ? 'desc' : 'asc' };
+                break;
+        }
+
+        // Fetch paginated products from database
+        const products = await prisma.product.findMany({
+            where: where.AND.length > 0 ? { AND: where.AND.filter(w => Object.keys(w).length > 0) } : undefined,
             include: {
                 productImages: {
+                    orderBy: {
+                        displayOrder: 'asc'
+                    },
                     take: 1,
-                    select: { imageUrl: true }
+                    select: { 
+                        imageUrl: true,
+                        altText: true,
+                        isPrimary: true 
+                    }
                 },
                 categories: {
-                    select: { id: true, name: true }
+                    select: { 
+                        id: true, 
+                        name: true 
+                    }
                 }
-            }
-        })
+            },
+            orderBy: orderBy,
+            skip: skip,
+            take: limitNum
+        });
 
-        // Calculate discounted prices and filter by price range
-        const productsWithDiscountedPrice = allProducts.map(product => ({
-            ...product,
-            discountedPrice: product.price * (1 - product.discount)
-        }))
+        // Calculate discounted prices and apply exact price filtering
+        const productsWithDiscount = products.map(product => {
+            const discountedPrice = product.price * (1 - product.discount);
+            return {
+                ...product,
+                discountedPrice: Number(discountedPrice.toFixed(2))
+            };
+        });
 
-        // Apply price range filter on discounted price
-        let filteredProducts = productsWithDiscountedPrice;
-        
+        // Apply exact price range filtering on discounted price
+        let filteredProducts = productsWithDiscount;
         if (minPrice || maxPrice) {
-            filteredProducts = productsWithDiscountedPrice.filter(product => {
+            filteredProducts = productsWithDiscount.filter(product => {
                 const finalPrice = product.discountedPrice;
                 let passMin = true;
                 let passMax = true;
@@ -1108,48 +1168,24 @@ const searchProducts = async (req, res) => {
             });
         }
 
-        // Apply sorting
-        const sortedProducts = filteredProducts.sort((a, b) => {
-            let aValue, bValue;
-            
-            switch (sortBy) {
-                case 'price':
-                    // Sort by discounted price
-                    aValue = a.discountedPrice;
-                    bValue = b.discountedPrice;
-                    break;
-                case 'createdAt':
-                    aValue = new Date(a.createdAt);
-                    bValue = new Date(b.createdAt);
-                    break;
-                case 'updatedAt':
-                    aValue = new Date(a.updatedAt);
-                    bValue = new Date(b.updatedAt);
-                    break;
-                case 'name':
-                default:
-                    aValue = a.name.toLowerCase();
-                    bValue = b.name.toLowerCase();
-                    break;
-            }
-            
-            if (sortOrder === 'desc') {
-                return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
-            } else {
-                return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
-            }
-        });
+        // For discounted price sorting, we need to handle separately
+        if (sortBy === 'price') {
+            filteredProducts.sort((a, b) => {
+                const aPrice = a.discountedPrice;
+                const bPrice = b.discountedPrice;
+                
+                if (sortOrder === 'desc') {
+                    return bPrice - aPrice;
+                } else {
+                    return aPrice - bPrice;
+                }
+            });
+        }
 
-        // Apply pagination
-        const totalCount = sortedProducts.length;
-        const totalPages = Math.ceil(totalCount / limit);
-        const paginatedProducts = sortedProducts.slice(skip, skip + parseInt(limit));
-
-        // Add discountedPrice to the response
-        const finalProducts = paginatedProducts.map(product => ({
-            ...product,
-            discountedPrice: product.discountedPrice // Include in response
-        }));
+        // Re-paginate after filtering (if price filtering reduced results)
+        const finalProducts = filteredProducts.slice(0, limitNum);
+        const actualCount = filteredProducts.length;
+        const totalPages = Math.ceil(actualCount / limitNum);
 
         res.status(200).json({
             success: true,
@@ -1157,11 +1193,11 @@ const searchProducts = async (req, res) => {
             data: {
                 products: finalProducts,
                 pagination: {
-                    currentPage: parseInt(page),
-                    totalPages,
-                    totalCount,
-                    hasNext: page < totalPages,
-                    hasPrev: page > 1
+                    currentPage: pageNum,
+                    totalPages: Math.max(1, totalPages),
+                    totalCount: actualCount,
+                    hasNext: pageNum < totalPages,
+                    hasPrev: pageNum > 1
                 },
                 filters: {
                     query,
