@@ -115,47 +115,58 @@ async function getCategoryProducts(req, res) {
       where: {
         id: id
       },
-      include: {
-        products: {
-          where: {
-            OR: [
-              { status: "ACTIVE" },
-              { status: "OUT_OF_STOCK" }
-            ]
-          },
-          select: {
-            name: true,
-            description: true,
-            price: true,
-            discount: true,
-            id: true,
-            status: true, // Include status to verify filtering
-            productImages: {
-              take: 1,
-              select: {
-                imageUrl: true
-              }
-            }
-          }
-        }
-      }
+      // REMOVE the include here and fetch products separately
     });
 
     if (!category) {
       return res.status(404).json({ error: "Category not found" });
     }
 
-    if (!category.products || category.products.length === 0) {
+    // Fetch products for this category directly, avoiding circular dependency
+    const products = await prisma.product.findMany({
+      where: {
+        categories: {
+          some: { id: id }
+        },
+        OR: [
+          { status: "ACTIVE" },
+          { status: "OUT_OF_STOCK" }
+        ]
+      },
+      select: {
+        name: true,
+        description: true,
+        price: true,
+        discount: true,
+        id: true,
+        status: true,
+        productImages: {
+          orderBy: { // Add orderBy to fix the image sorting issue
+            displayOrder: 'asc'
+          },
+          take: 1,
+          select: {
+            imageUrl: true,
+            displayOrder: true // Include displayOrder for debugging
+          }
+        }
+      }
+    });
+
+    if (!products || products.length === 0) {
       return res.status(404).json({ error: "No active products found in this category" });
     }
 
     res.status(200).json({
       message: "You Get Category Products Successfully",
-      products: category.products,
+      products: products,
     });
   } catch (error) {
     console.error("Error fetching category products:", error);
-    res.status(500).json({ error: "You Fail To Get Categories Products" });
+    res.status(500).json({ 
+      error: "You Fail To Get Categories Products",
+      details: error.message 
+    });
   }
 }
 async function getCategoryById(req,res){

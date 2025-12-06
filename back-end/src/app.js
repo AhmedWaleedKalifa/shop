@@ -18,7 +18,9 @@ const corsOptions = {
     
     // Allow your main domain and all Netlify deploy previews
     const allowedOrigins = [
-      process.env.FRONT_END_URL, // Your main frontend URL
+      process.env.FRONT_END_URL,
+      process.env.FRONT_END_URL2,
+ // Your main frontend URL
       "https://werzu.netlify.app", // Your main Netlify URL
     ];
     

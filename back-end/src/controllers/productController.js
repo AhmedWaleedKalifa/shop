@@ -148,14 +148,15 @@ async function createProduct(req, res) {
 
     // Create the product
     const product = await prisma.product.create({
-      data: data,
-      include: {
-        categories: true,
-        productSizes: true,
-        productImages: true,
-        productColors: true,
-      },
-    });
+  data: data,
+  include: {
+    categories: true,
+    productSizes: true,
+    productImages: { orderBy: { displayOrder: "asc" } },
+    productColors: true,
+  },
+});
+
 
     res.status(201).json({
       message: "Product created successfully",

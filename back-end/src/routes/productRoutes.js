@@ -6,8 +6,8 @@ const {authenticate,authorize}=require("../middleware/auth")
 // uploadProduct.array("images", 5),
 const { searchValidationRules, validateSearch } = require('../validators/searchValidator')
 
-productRouter.post("/",authenticate,authorize("ADMIN"),upload.array("productImages",5), productController.createProduct);
-productRouter.put("/:id",authenticate,authorize("ADMIN"),upload.array("productImages",5), productController.updateProduct);
+productRouter.post("/",authenticate,authorize("ADMIN"),upload.array("productImages",10), productController.createProduct);
+productRouter.put("/:id",authenticate,authorize("ADMIN"),upload.array("productImages",10), productController.updateProduct);
 productRouter.get("/admin",authenticate,authorize("ADMIN","MODERATOR"), productController.getAdminProducts);
 productRouter.get("/", productController.getUserProducts);
 productRouter.get('/search', searchValidationRules(), validateSearch, productController.searchProducts);
