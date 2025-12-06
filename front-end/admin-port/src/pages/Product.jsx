@@ -18,11 +18,8 @@ function ProductSkeleton() {
       <section className='leftDiv lg:w-1/2' aria-label="Loading product images">
         <div className="relative left-0 aspect-3/4 md:aspect-auto overflow-hidden w-full min-h-[60vh]">
           {/* Discount badge skeleton */}
-<div className='absolute top-4 left-4 z-20'>
-  <div className='relative'>
-    <div className='bg-gray-200 px-3 py-1.5 rounded-md shadow-lg w-20 h-10'></div>
-  </div>
-</div>
+          <div className='rounded-full p-1 absolute top-4 left-4 w-14 h-14 z-20 bg-gray-200 flex flex-row items-center justify-center'></div>
+
           <div className="relative w-full bg-white overflow-hidden">
             {/* Main image skeleton */}
             <div className="flex">
@@ -215,37 +212,26 @@ function Product() {
       {/* Left Section - Product Images */}
       <section className='leftDiv lg:w-1/2' aria-label="Product images">
         <div className="relative left-0 aspect-3/4 md:aspect-auto overflow-hidden w-full min-h-[60vh]">
-{product.discount !== 0 && (
-  <div className='absolute top-4 left-4 z-20'>
-    {/* Updated discount badge matching ProductCard */}
-    <div className='relative'>
-      {/* Main badge with shadow */}
-      <div className='bg-yellow text-black px-3 py-1.5 rounded-md shadow-lg font-bold text-lg flex items-center gap-1 border border-yellow/80'>
-        <span className="font-extrabold">-{(Math.ceil(product.discount * 100)).toFixed(0)}%</span>
-        <span className="text-sm font-semibold">OFF</span>
-      </div>
-      {/* Ribbon tail/pointer */}
-      <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-yellow"></div>
-    </div>
-  </div>
-)}
+          {product.discount !== 0 && (
+            <div className='rounded-full p-1 absolute top-4 left-4 w-14 h-14 z-20 bg-yellow flex flex-row items-center justify-center text-xl font-bold border-2 border-gray text-gray font-heading'>
+              {(Math.ceil(product.discount * 100)).toFixed(0)}%
+            </div>
+          )}
 
           <div className="relative w-full bg-white overflow-hidden">
             <div
               className="flex transition-transform duration-300 ease-in-out"
               style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
             >
-             {product.productImages.map((image) => (
-  <figure key={image?.id} className="w-full shrink-0 flex items-center justify-center bg-gray-50">
-    <div className="relative w-full h-full flex items-center justify-center">
-      <img
-        src={image?.imageUrl}
-        alt={image?.altText || `${product.name} product image`}
-        className="w-full max-h-[70vh] object-contain"
-      />
-    </div>
-  </figure>
-))}
+              {product.productImages.map((image) => (
+                <figure key={image?.id} className="w-full shrink-0">
+                  <img
+                    src={image?.imageUrl}
+                    alt={image?.altText || `${product.name} product image`}
+                    className="w-full aspect-3/4 md:max-h-[70vh] md:aspect-auto md:object-contain lg:max-h-[75vh] object-cover"
+                  />
+                </figure>
+              ))}
             </div>
 
             {product.productImages.length > 1 && (

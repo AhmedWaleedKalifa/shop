@@ -9,17 +9,8 @@ function ProductCard({ name, id, description, price, discount, image }) {
 >
     <article className="aspect-3/4 overflow-hidden relative">
         {discount !== 0 && (
-            <div className='absolute top-1.5 left-1.5 z-10'>
-                {/* Updated discount badge with same colors but better design */}
-                <div className='relative'>
-                    {/* Main badge with shadow */}
-                    <div className='bg-yellow text-black px-1.5 py-1 rounded-md shadow-lg font-semibold text-sm flex items-center gap-1 border border-yellow/80'>
-                        <span className="font-extrabold">-{(Math.ceil(discount * 100)).toFixed(0)}%</span>
-                        <span className="text-xs font-semibold">OFF</span>
-                    </div>
-                    {/* Ribbon tail/pointer */}
-                    <div className="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-yellow"></div>
-                </div>
+            <div className='rounded-full p-2 absolute top-1 left-1 w-10 h-10 lg:w-8 lg:h-8 lg:text-xs lg:left-1 lg:top-1 bg-yellow flex flex-row items-center justify-center text-lg font-bold border text-gray font-heading'>
+                {(Math.ceil(discount * 100)).toFixed(0)}%
             </div>
         )}
         <img
