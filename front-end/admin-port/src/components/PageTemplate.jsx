@@ -1,7 +1,6 @@
 import React from 'react'
 import Navbar from './Navbar';
 import { Outlet } from 'react-router';
-import Footer from './Footer';
 function PageTemplate() {
   return (
     <>
@@ -10,7 +9,6 @@ function PageTemplate() {
         <Outlet />
 
       </div>
-      <Footer/>
     </>
   );
 }

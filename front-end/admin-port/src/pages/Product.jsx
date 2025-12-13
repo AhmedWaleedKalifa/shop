@@ -2,7 +2,6 @@ import React, { lazy, Suspense, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { productService } from "../services/productService"
 import { getApiError } from '../utils/errorHandler';
-import BuyButton from '../components/BuyButton';
 import { useLocation } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';

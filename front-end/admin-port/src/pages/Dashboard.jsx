@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { categoryService } from "../services/categoryService";
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
@@ -23,44 +23,44 @@ function CategoryCardSkeleton() {
   return (
     <div className="flex flex-col md:flex-row w-full md:aspect-auto relative font-body min-h-[400px] md:min-h-[500px]">
       {/* Mobile/Tablet: Single full-width skeleton */}
-    
-      
+
+
       {/* Desktop: Two-column skeleton */}
       <div className=" md:w-1/2 relative aspect-2/3">
-        <Skeleton 
-          height="100%" 
-          width="100%" 
+        <Skeleton
+          height="100%"
+          width="100%"
           style={{ lineHeight: 'unset' }}
         />
       </div>
-      
+
       <div className="hidden md:block md:w-1/2 relative aspect-2/3">
-        <Skeleton 
-          height="100%" 
-          width="100%" 
+        <Skeleton
+          height="100%"
+          width="100%"
           style={{ lineHeight: 'unset' }}
         />
       </div>
-      
+
       {/* Content overlay skeleton */}
       <div className="absolute inset-0 flex flex-col justify-end items-center pb-8 lg:pb-12">
         <div className="mb-4 text-center">
-          <Skeleton 
-            height={40} 
-            width={200} 
+          <Skeleton
+            height={40}
+            width={200}
             style={{ marginBottom: '16px' }}
             className="lg:hidden"
           />
-          <Skeleton 
-            height={60} 
-            width={300} 
+          <Skeleton
+            height={60}
+            width={300}
             style={{ marginBottom: '16px' }}
             className="hidden lg:block"
           />
         </div>
-        <Skeleton 
-          height={48} 
-          width={150} 
+        <Skeleton
+          height={48}
+          width={150}
           borderRadius={8}
         />
       </div>
@@ -72,9 +72,9 @@ function CategoryCardSkeleton() {
 function SimpleCategoryCardSkeleton() {
   return (
     <div className="flex flex-col md:flex-row w-full md:aspect-auto relative font-body min-h-[400px]">
-      <Skeleton 
-        height="100%" 
-        width="100%" 
+      <Skeleton
+        height="100%"
+        width="100%"
         className="aspect-2/3 md:aspect-auto"
         style={{ lineHeight: 'unset' }}
       />
@@ -116,8 +116,10 @@ function Home() {
   }
 
   return (
-    <main className="mx-auto bg-gray min-h-screen font-body" role="main">
-     
+    <main className=" bg-yellow/30 min-h-[90vh] font-body flex lg:flex-row lg:items-start gap-8 py-12 items-center justify-center flex-col ">
+      <Link to="/page/categories"><button className='w-60 h-40 font-bold text-2xl cursor-pointer hover:text-gray duration-300 transition-all hover:border-gray block bg-yellow text-white px-12 py-12 tracking-wider rounded-xl border-2 border-white'>Categories</button></Link>
+      <Link to="/page/products"><button className= 'w-60 h-40 font-bold text-2xl cursor-pointer hover:text-gray duration-300 transition-all hover:border-gray block bg-yellow text-white px-12 py-12 tracking-wider rounded-xl border-2 border-white'>Products</button></Link>
+      <Link to="/page/users"><button className=    'w-60 h-40 font-bold text-2xl cursor-pointer hover:text-gray duration-300 transition-all hover:border-gray block bg-yellow text-white px-12 py-12 tracking-wider rounded-xl border-2 border-white'>Users</button></Link>
     </main>
   );
 }

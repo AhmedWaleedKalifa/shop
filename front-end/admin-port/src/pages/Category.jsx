@@ -7,18 +7,13 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 const ProductCard = lazy(() => import("../components/ProductCard"))
 
-// Fixed ProductCardSkeleton - Matches exact structure of ProductCard
-// Fixed ProductCardSkeleton - EXACT same height as ProductCard
 function ProductCardSkeleton() {
   return (
     <div 
       className='relative left-0 w-[calc(50%-4px)] md:w-[calc(25%-6px)] lg:w-[calc(12.5%-5.5px)] h-auto bg-gray/4 flex flex-col justify-between font-body'
     >
-      {/* Image section - EXACT same as ProductCard */}
       <div className="aspect-3/4 overflow-hidden relative">
-        {/* Optional discount badge area - doesn't affect height */}
         <div className='rounded-full absolute top-1 left-1 w-10 h-10 lg:w-8 lg:h-8'>
-          {/* Empty - just maintains layout */}
         </div>
         <Skeleton 
           height="100%" 
@@ -27,25 +22,19 @@ function ProductCardSkeleton() {
         />
       </div>
       
-      {/* Title - EXACT padding as ProductCard */}
       <div className="px-2 pt-2 mb-1 h-5">
         <Skeleton height={16} width="90%" />
       </div>
       
-      {/* Description - EXACT single line height */}
       <div className="px-2 h-4">
         <Skeleton height={12} width="100%" />
       </div>
       
-      {/* Price section - EXACT structure as ProductCard */}
       <div className="font-body">
-        {/* First price line - EXACT same */}
         <div className="px-2 pt-1 h-5">
           <Skeleton height={16} width="40%" />
         </div>
-        {/* Second line - matches the "invisible" paragraph */}
         <div className="px-2 h-4">
-          {/* This is the invisible "." paragraph - make skeleton same height */}
           <Skeleton height={16} width="30%" className="opacity-0" />
 
         </div>
@@ -66,8 +55,7 @@ function Category() {
     async function loadData() {
       try {
         setLoading(true);
-        setErrorMsg(""); // Reset error on new load
-        
+        setErrorMsg("");
         let categoryData = await categoryService.getById(id);
         categoryData = categoryData.category;
         
@@ -76,6 +64,7 @@ function Category() {
         console.log(productsData)
         
         if (productsData) {
+          console.log(productsData)
           setProducts(productsData);
         } else {
           setProducts([]);
@@ -107,7 +96,6 @@ function Category() {
 
   }, [id, location.key]);
 
-  // Fix Issue 1: Handle loading state properly
   if (loading) {
     return (
       <main className="bg-white m-2 min-h-[70vh] font-body">
@@ -125,7 +113,6 @@ function Category() {
     );
   }
 
-  // Fix Issue 1: Check for errors AFTER loading is done
   if (errorMsg) {
     return (
       <div className="text-center py-10 text-red font-semibold min-h-[70vh]">
@@ -134,7 +121,6 @@ function Category() {
     );
   }
 
-  // Fix Issue 1: Only show "Category not found" if we're not loading AND category is null
   if (!category) {
     return (
       <div className="text-center py-10 text-gray min-h-[70vh]">
