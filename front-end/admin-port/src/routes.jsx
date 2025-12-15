@@ -9,6 +9,7 @@ import { Children } from "react";
 import Categories from "./pages/Categories";
 import Products from "./pages/Products";
 import Users from "./pages/Users";
+import CreateCategory from "./pages/CreateCategory";
 const routes = [
     {path:"/",
     element:<Login/>
@@ -23,6 +24,7 @@ const routes = [
         { path: "category/:id?", element: <Category /> },
         { path: "product/:id?", element: <Product /> },
         { path: "search", element: <Search /> },
+        {path:"createCategory",element:<CreateCategory/>},
         { path: "*", element: <Error /> }
     ]},
 
