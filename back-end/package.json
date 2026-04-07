@@ -11,7 +11,9 @@
     "build": "npx prisma generate",
     "start": "node src/server.js",
     "migrate": "npx prisma migrate deploy",
-    "db-seed": "npx prisma db seed"
+    "db-seed": "npx prisma db seed",
+      "postinstall": "prisma generate"
+
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
